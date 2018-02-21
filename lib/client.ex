@@ -30,4 +30,13 @@ defmodule ExRemoteDockers.Client do
     headers
     |> Keyword.put(:"Content-Type", "application/json")
   end
+
+  def process_response_body(body) when length(body) > 0 do
+    body
+    |> Poison.decode!
+  end
+
+  def process_response_body(body) do
+    body
+  end
 end
