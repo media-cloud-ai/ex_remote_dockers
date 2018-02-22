@@ -3,16 +3,18 @@ defmodule ExRemoteDockers.ContainersTest do
   doctest ExRemoteDockers.Containers
 
   test "list containers" do
-    hosts = Application.get_env(:ex_remote_dockers, :hosts)
+    hosts = [%HostConfig{}]
     Enum.each hosts, fn host ->
-      assert ExRemoteDockers.Containers.list(host) != ""
+      containers = ExRemoteDockers.Containers.list(host)
+      assert is_list(containers.body)
     end
   end
 
   test "list all containers" do
-    hosts = Application.get_env(:ex_remote_dockers, :hosts)
+    hosts = [%HostConfig{}]
     Enum.each hosts, fn host ->
-      assert ExRemoteDockers.Containers.list_all(host) != ""
+      containers = ExRemoteDockers.Containers.list_all(host)
+      assert is_list(containers.body)
     end
   end
 
@@ -23,7 +25,7 @@ defmodule ExRemoteDockers.ContainersTest do
   end
 
   test "create & remove container" do
-    host = List.first(Application.get_env(:ex_remote_dockers, :hosts))
+    host = %HostConfig{}
 
     # Create
     response = ExRemoteDockers.Containers.create(host, "new_container", %{"Image": "hello-world"})

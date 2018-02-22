@@ -9,83 +9,74 @@ defmodule ExRemoteDockers.Containers do
   @doc """
   Returns a list of running containers
   """
-  def list(host) do
-    ExRemoteDockers.Client.get(basic_url(host, "json"))
+  def list(%HostConfig{} = host) do
+    basic_url(host, "json")
+    |> ExRemoteDockers.Client.get()
   end
 
   @doc """
   Returns a list of all containers
   """
-  def list_all(host) do
-    ExRemoteDockers.Client.get(basic_url(host, "json", "all=true"))
+  def list_all(%HostConfig{} = host) do
+    basic_url(host, "json")
+    |> ExRemoteDockers.Client.get([all: true])
   end
 
   @doc """
   Create a container
   """
-  def create(host, name, query) do
+  def create(%HostConfig{} = host, name, query) do
     query =
       query
       |> Poison.encode!
-    ExRemoteDockers.Client.post(basic_url(host, "create", "name=" <> name), [body: query])
+    basic_url(host, "create")
+    |> ExRemoteDockers.Client.post([name: name, body: query])
   end
 
   @doc """
   Remove a container
   """
-  def remove(host, container_id) do
-    ExRemoteDockers.Client.delete(basic_url(host, container_id))
+  def remove(%HostConfig{} = host, container_id) do
+    basic_url(host, container_id)
+    |> ExRemoteDockers.Client.delete()
   end
 
   @doc """
   Start a container
   """
-  def start(host, container_id) do
-    ExRemoteDockers.Client.post(basic_url(host, container_id <> "/start"))
+  def start(%HostConfig{} = host, container_id) do
+    basic_url(host, container_id <> "/start")
+    |> ExRemoteDockers.Client.post()
   end
 
   @doc """
   Stop a container
   """
-  def stop(host, container_id) do
-    ExRemoteDockers.Client.post(basic_url(host, container_id <> "/stop"))
+  def stop(%HostConfig{} = host, container_id) do
+    basic_url(host, container_id <> "/stop")
+    |> ExRemoteDockers.Client.post()
   end
 
   @doc """
   Return low-level information about a container
   """
-  def inspect(host, container_id) do
-    ExRemoteDockers.Client.get(basic_url(host, container_id <> "/json"))
+  def inspect(%HostConfig{} = host, container_id) do
+    basic_url(host, container_id <> "/json")
+    |> ExRemoteDockers.Client.get()
   end
 
 
-  defp basic_url(host, uri, parameters) do
+  defp basic_url(%HostConfig{} = host_config, uri) do
     uri = check_uri(uri)
-    uri = check_parameters(uri, parameters)
+    # uri = check_parameters(uri, parameters)
 
-    host <> @api_version <> @containers_uri <> uri
-  end
-
-  defp basic_url(host, uri) do
-    basic_url(host, uri, nil)
+    host_config.host <> ":" <> host_config.port <> @api_version <> @containers_uri <> uri
   end
 
   defp check_uri(uri) do
     unless String.starts_with? uri, "/" do
       "/" <> uri
     end
-  end
-
-  defp check_parameters(uri, parameters) when is_nil(parameters) do
-    uri
-  end
-
-  defp check_parameters(uri, parameters) do
-    uri =
-      unless String.starts_with? parameters, "?" do
-        uri <> "?"
-      end
-    uri <> parameters
   end
 
 end
