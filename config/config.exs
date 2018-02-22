@@ -29,8 +29,4 @@ use Mix.Config
 #
 #     import_config "#{Mix.env}.exs"
 
-# Note: Remote Docker daemons must be started on a TCP host
-config :ex_remote_dockers, hosts: [
-    "localhost:2357"
-]
 config :ex_remote_dockers, version: "v1.35"
