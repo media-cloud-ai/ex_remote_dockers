@@ -1,4 +1,6 @@
 defmodule ExRemoteDockers.Containers do
+  alias ExRemoteDockers.Client
+  alias ExRemoteDockers.HostConfig
   @moduledoc """
   Connector for managing remote Docker containers
   """
@@ -11,7 +13,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def list(%HostConfig{} = host) do
     basic_url(host, "json")
-    |> ExRemoteDockers.Client.get()
+    |> Client.get()
   end
 
   @doc """
@@ -19,7 +21,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def list_all(%HostConfig{} = host) do
     basic_url(host, "json")
-    |> ExRemoteDockers.Client.get([all: true])
+    |> Client.get([all: true])
   end
 
   @doc """
@@ -30,7 +32,7 @@ defmodule ExRemoteDockers.Containers do
       query
       |> Poison.encode!
     basic_url(host, "create")
-    |> ExRemoteDockers.Client.post([name: name, body: query])
+    |> Client.post([name: name, body: query])
   end
 
   @doc """
@@ -38,7 +40,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def remove(%HostConfig{} = host, container_id) do
     basic_url(host, container_id)
-    |> ExRemoteDockers.Client.delete()
+    |> Client.delete()
   end
 
   @doc """
@@ -46,7 +48,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def start(%HostConfig{} = host, container_id) do
     basic_url(host, container_id <> "/start")
-    |> ExRemoteDockers.Client.post()
+    |> Client.post()
   end
 
   @doc """
@@ -54,7 +56,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def stop(%HostConfig{} = host, container_id) do
     basic_url(host, container_id <> "/stop")
-    |> ExRemoteDockers.Client.post()
+    |> Client.post()
   end
 
   @doc """
@@ -62,7 +64,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def inspect(%HostConfig{} = host, container_id) do
     basic_url(host, container_id <> "/json")
-    |> ExRemoteDockers.Client.get()
+    |> Client.get()
   end
 
 

@@ -2,8 +2,19 @@ defmodule ExRemoteDockers.ContainersTest do
   use ExUnit.Case
   doctest ExRemoteDockers.Containers
 
+  test "host from config array" do
+    config_hosts = [
+      [host: "localhost", port: 2357]
+    ]
+    hosts =
+      Enum.map config_hosts, fn host ->
+        %ExRemoteDockers.HostConfig{host: host[:host], port: host[:port]}
+      end
+    assert length(hosts) == length(config_hosts)
+  end
+
   test "list containers" do
-    hosts = [%HostConfig{}]
+    hosts = [%ExRemoteDockers.HostConfig{}]
     Enum.each hosts, fn host ->
       containers = ExRemoteDockers.Containers.list(host)
       assert is_list(containers.body)
@@ -11,7 +22,7 @@ defmodule ExRemoteDockers.ContainersTest do
   end
 
   test "list all containers" do
-    hosts = [%HostConfig{}]
+    hosts = [%ExRemoteDockers.HostConfig{}]
     Enum.each hosts, fn host ->
       containers = ExRemoteDockers.Containers.list_all(host)
       assert is_list(containers.body)
@@ -25,7 +36,7 @@ defmodule ExRemoteDockers.ContainersTest do
   end
 
   test "create & remove container" do
-    host = %HostConfig{}
+    host = %ExRemoteDockers.HostConfig{}
 
     # Create
     response = ExRemoteDockers.Containers.create(host, "new_container", %{"Image": "hello-world"})
