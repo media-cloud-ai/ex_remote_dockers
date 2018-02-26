@@ -68,8 +68,9 @@ defmodule ExRemoteDockers.Containers do
 
 
   defp basic_url(%HostConfig{} = host_config, uri) do
-    uri = check_uri(uri)
-    host_config.host <> ":" <> host_config.port <> @containers_uri <> uri
+    uri
+    |> check_uri
+    |> build_uri(host_config)
   end
 
   defp check_uri(uri) do
@@ -78,6 +79,10 @@ defmodule ExRemoteDockers.Containers do
     else
       "/" <> uri
     end
+  end
+
+  defp build_uri(uri, %HostConfig{} = host_config) do
+    host_config.host <> ":" <> host_config.port <> @containers_uri <> uri
   end
 
 end
