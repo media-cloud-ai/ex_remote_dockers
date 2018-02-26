@@ -14,7 +14,7 @@ defmodule ExRemoteDockers.ContainersTest do
   end
 
   test "list containers" do
-    hosts = [%ExRemoteDockers.HostConfig{}]
+    hosts = [%ExRemoteDockers.HostConfig{host: "localhost", port: "2357"}]
     Enum.each hosts, fn host ->
       containers = ExRemoteDockers.Containers.list(host)
       assert is_list(containers.body)

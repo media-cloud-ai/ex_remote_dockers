@@ -77,7 +77,10 @@ defmodule ExRemoteDockers.Containers do
   defp check_uri(uri), do: "/" <> uri
 
   defp build_uri(uri, %HostConfig{} = host_config) do
-    host_config.host <> ":" <> host_config.port <> @containers_uri <> uri
+    host_config.host <> ":" <> check_port(host_config.port) <> @containers_uri <> uri
   end
+
+  defp check_port(port) when is_integer(port), do: Integer.to_string(port)
+  defp check_port(port), do: port
 
 end
