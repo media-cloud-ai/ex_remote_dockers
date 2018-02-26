@@ -8,7 +8,17 @@ defmodule ExRemoteDockers.MixProject do
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      description: description()
+      package: package(),
+      description: description(),
+
+      # Docs
+      name: "ExRemoteDockers",
+      source_url: "https://github.com/FTV-Subtil/ex_remote_dockers",
+      homepage_url: "https://github.com/FTV-Subtil/ex_remote_dockers",
+      docs: [
+        main: "ExRemoteDockers",
+          extras: ["README.md"]
+      ]
     ]
   end
 
@@ -30,5 +40,18 @@ defmodule ExRemoteDockers.MixProject do
 
   defp description() do
     "Elixir library to manage containers from several remote dockers, using the Docker Engine API v1.35."
+  end
+
+  defp package() do
+    [
+      name: "ex_remote_dockers",
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      maintainers: [
+        "Valentin Noël",
+        "Marc-Antoine Arnaud"
+      ],
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/FTV-Subtil/ex_remote_dockers"}
+    ]
   end
 end
