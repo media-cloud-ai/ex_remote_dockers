@@ -73,7 +73,9 @@ defmodule ExRemoteDockers.Containers do
   end
 
   defp check_uri(uri) do
-    unless String.starts_with? uri, "/" do
+    if String.starts_with? uri, "/" do
+      uri
+    else
       "/" <> uri
     end
   end
