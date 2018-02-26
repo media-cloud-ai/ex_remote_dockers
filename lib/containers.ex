@@ -73,13 +73,8 @@ defmodule ExRemoteDockers.Containers do
     |> build_uri(host_config)
   end
 
-  defp check_uri(uri) do
-    if String.starts_with? uri, "/" do
-      uri
-    else
-      "/" <> uri
-    end
-  end
+  defp check_uri("/" <> _endpoint = uri), do: uri
+  defp check_uri(uri), do: "/" <> uri
 
   defp build_uri(uri, %HostConfig{} = host_config) do
     host_config.host <> ":" <> host_config.port <> @containers_uri <> uri
