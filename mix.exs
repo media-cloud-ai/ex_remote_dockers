@@ -22,7 +22,7 @@ defmodule ExRemoteDockers.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpotion, "~> 3.0.2"},
+      {:httpotion, "~> 3.1.0"},
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
