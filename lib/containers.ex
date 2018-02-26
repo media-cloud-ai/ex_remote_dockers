@@ -5,7 +5,6 @@ defmodule ExRemoteDockers.Containers do
   Connector for managing remote Docker containers
   """
 
-  @api_version "/#{Application.get_env(:ex_remote_dockers, :version)}"
   @containers_uri "/containers"
 
   @doc """
@@ -70,9 +69,7 @@ defmodule ExRemoteDockers.Containers do
 
   defp basic_url(%HostConfig{} = host_config, uri) do
     uri = check_uri(uri)
-    # uri = check_parameters(uri, parameters)
-
-    host_config.host <> ":" <> host_config.port <> @api_version <> @containers_uri <> uri
+    host_config.host <> ":" <> host_config.port <> @containers_uri <> uri
   end
 
   defp check_uri(uri) do
