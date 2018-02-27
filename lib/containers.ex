@@ -20,7 +20,7 @@ defmodule ExRemoteDockers.Containers do
   """
   def list_all(%HostConfig{} = host) do
     basic_url(host, "json")
-    |> Client.get([all: true])
+    |> Client.get([query: %{"all" => true}])
   end
 
   @doc """
