@@ -1,9 +1,9 @@
-defmodule ExRemoteDockers.MixProject do
+defmodule RemoteDockers.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :ex_remote_dockers,
+      app: :remote_dockers,
       version: "0.1.2",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
@@ -12,12 +12,12 @@ defmodule ExRemoteDockers.MixProject do
       description: description(),
 
       # Docs
-      name: "ExRemoteDockers",
+      name: "RemoteDockers",
       source_url: "https://github.com/FTV-Subtil/ex_remote_dockers",
       homepage_url: "https://github.com/FTV-Subtil/ex_remote_dockers",
       docs: [
-        main: "ExRemoteDockers",
-          extras: ["README.md"]
+        main: "RemoteDockers",
+        extras: ["README.md"]
       ]
     ]
   end
@@ -25,14 +25,17 @@ defmodule ExRemoteDockers.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [
+        :logger,
+        :httpoison,
+      ]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpotion, "~> 3.1.0"},
+      {:httpoison, "~> 1.0"},
       {:poison, "~> 3.1"},
       {:ex_doc, "~> 0.18", only: :dev, runtime: false}
     ]
@@ -44,7 +47,7 @@ defmodule ExRemoteDockers.MixProject do
 
   defp package() do
     [
-      name: "ex_remote_dockers",
+      name: "remote_dockers",
       files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: [
         "Valentin Noël",
