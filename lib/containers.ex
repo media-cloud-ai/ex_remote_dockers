@@ -26,12 +26,12 @@ defmodule ExRemoteDockers.Containers do
   @doc """
   Create a container
   """
-  def create(%HostConfig{} = host, name, query) do
-    query =
-      query
+  def create(%HostConfig{} = host, name, body) do
+    body =
+      body
       |> Poison.encode!
     basic_url(host, "create")
-    |> Client.post([name: name, body: query])
+    |> Client.post([query: %{"name" => name}, body: body])
   end
 
   @doc """

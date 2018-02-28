@@ -29,30 +29,34 @@ defmodule ExRemoteDockers.ContainersTest do
     end
   end
 
-  defp inspect_status(host, container_id, expected_status) do
+  defp inspect_status(host, container_id, container_name, container_image, expected_status) do
     response = ExRemoteDockers.Containers.inspect(host, container_id)
     assert response.status_code == 200 # OK
     assert response.body["State"]["Status"] == expected_status
+    assert response.body["Name"] ==  "/" <> container_name
+    assert response.body["Config"]["Image"] == container_image
   end
 
   test "create & remove container" do
     host = %ExRemoteDockers.HostConfig{}
+    container_name = "new_container"
+    container_image = "hello-world"
 
     # Create
-    response = ExRemoteDockers.Containers.create(host, "new_container", %{"Image": "hello-world"})
+    response = ExRemoteDockers.Containers.create(host, container_name, %{"Image": container_image})
     assert response.status_code == 201 # Created
     container_id = response.body["Id"]
-    inspect_status(host, container_id, "created")
+    inspect_status(host, container_id, container_name, container_image, "created")
 
     # Start
     response = ExRemoteDockers.Containers.start(host, container_id)
     assert response.status_code == 204 # No Content
-    inspect_status(host, container_id, "running")
+    inspect_status(host, container_id, container_name, container_image, "running")
 
     # Stop
     response = ExRemoteDockers.Containers.stop(host, container_id)
     assert response.status_code == 204 # No Content
-    inspect_status(host, container_id, "exited")
+    inspect_status(host, container_id, container_name, container_image, "exited")
 
     # Delete
     response =  ExRemoteDockers.Containers.remove(host, container_id)
