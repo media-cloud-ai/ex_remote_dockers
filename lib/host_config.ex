@@ -2,20 +2,19 @@ defmodule RemoteDockers.HostConfig do
   @enforce_keys [:hostname, :port]
   defstruct [:hostname, :port, :ssl]
 
+  @default_port 2376
+
   @doc """
   Build configuration with defaults
 
   default:
   ```
   hostname: "localhost"
-  port: 2376
+  port: #{@default_port}
   ```
   """
   def build() do
-    %RemoteDockers.HostConfig{
-      hostname: "localhost",
-      port: 2376
-    }
+    build("localhost", @default_port)
   end
 
   @doc """
@@ -23,13 +22,20 @@ defmodule RemoteDockers.HostConfig do
 
   default:
   ```
-  port: 2376
+  port: #{@default_port}
   ```
   """
   def build(hostname) do
+    build(hostname, @default_port)
+  end
+
+  @doc """
+  Build configuration with specific hostname and port
+  """
+  def build(hostname, port) do
     %RemoteDockers.HostConfig{
       hostname: hostname,
-      port: 2376
+      port: port
     }
   end
 
@@ -38,13 +44,20 @@ defmodule RemoteDockers.HostConfig do
 
   default:
   ```
-  port: 2376
+  port: #{@default_port}
   ```
   """
   def build(hostname, certfile, keyfile) do
+    build(hostname, @default_port, certfile, keyfile)
+  end
+
+  @doc """
+  Build configuration with hostname, port and SSL
+  """
+  def build(hostname, port, certfile, keyfile) do
     %RemoteDockers.HostConfig{
       hostname: hostname,
-      port: 2376,
+      port: port,
       ssl: [
         certfile: certfile,
         keyfile: keyfile,
