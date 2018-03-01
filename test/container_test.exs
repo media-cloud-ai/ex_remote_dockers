@@ -3,15 +3,19 @@ defmodule RemoteDockers.ContainerTest do
   alias RemoteDockers.{Container, HostConfig}
   doctest RemoteDockers.Container
 
+  @host_config HostConfig.build(
+    "https://192.168.99.100",
+    "/path/to/cert.pem",
+    "/path/to/key.pem"
+  )
+
   test "list containers" do
-    host_config = HostConfig.build("https://192.168.99.100", "/Users/marco/.docker/machine/certs/cert.pem", "/Users/marco/.docker/machine/certs/key.pem")
-    containers = Container.list!(host_config)
+    containers = Container.list!(@host_config)
     assert is_list(containers.body)
   end
 
   test "list all containers" do
-    host_config = HostConfig.build("https://192.168.99.100", "/Users/marco/.docker/machine/certs/cert.pem", "/Users/marco/.docker/machine/certs/key.pem")
-    containers = Container.list_all!(host_config)
+    containers = Container.list_all!(@host_config)
     assert is_list(containers.body)
   end
 
@@ -21,10 +25,8 @@ defmodule RemoteDockers.ContainerTest do
   end
 
   test "create & remove container" do
-    host_config = HostConfig.build("https://192.168.99.100", "/Users/marco/.docker/machine/certs/cert.pem", "/Users/marco/.docker/machine/certs/key.pem")
-
     # Create
-    container = Container.create!(host_config, "new_container", "rabbitmq:management")
+    container = Container.create!(@host_config, "new_container", "rabbitmq:management")
     inspect_status(container, "created")
 
     # Start
