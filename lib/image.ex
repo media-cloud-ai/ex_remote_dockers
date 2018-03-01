@@ -35,6 +35,24 @@ defmodule RemoteDockers.Image do
     end
   end
 
+  @doc """
+  List all images (with children)
+  """
+  def list_all!(host_config) do
+    options =
+      HostConfig.get_options(host_config)
+      |> Keyword.put(:query, %{"all" => true})
+
+    response =
+      Client.build_endpoint(@images_uri)
+      |> Client.build_uri(host_config)
+      |> Client.get!([], options)
+
+    case response.status_code do
+      200 -> Enum.map(response.body, fn(image) -> to_image(image, host_config) end)
+      _ -> raise "unable to list all images"
+    end
+  end
 
   defp to_image(%{} = image, %HostConfig{} = host_config) do
     %RemoteDockers.Image{
