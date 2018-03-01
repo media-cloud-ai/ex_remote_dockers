@@ -11,6 +11,6 @@ defmodule RemoteDockers.ImageTest do
 
   test "list images" do
     images = Image.list!(@host_config)
-    assert is_list(images.body)
+    assert is_list(images)
   end
 end
