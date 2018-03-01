@@ -2,9 +2,9 @@ defmodule RemoteDockers do
   @moduledoc """
   Elixir wrapper to drive Docker nodes.
 
-  Before try this library, be sure your docker machine will serve the API on HTTP (on some OS, default is on a socket).
+  Before using this library, ensure your Docker instance is serving the HTTP API (by default, the service is generally listening to a socket).
 
-  This library support the connection with SSL certificat.
+  This library supports the connection with SSL certificat (HTTPS).
 
   ### Supported endpoints
 
