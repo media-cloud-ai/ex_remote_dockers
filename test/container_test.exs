@@ -4,9 +4,10 @@ defmodule RemoteDockers.ContainerTest do
   doctest RemoteDockers.Container
 
   @host_config HostConfig.build(
-    "https://192.168.99.100",
-    "/path/to/cert.pem",
-    "/path/to/key.pem"
+    Application.get_env(:remote_dockers, :hostname),
+    Application.get_env(:remote_dockers, :port),
+    Application.get_env(:remote_dockers, :certfile),
+    Application.get_env(:remote_dockers, :keyfile)
   )
 
   test "list containers" do
