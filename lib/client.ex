@@ -17,8 +17,14 @@ defmodule RemoteDockers.Client do
 
   def process_response_body(""), do: %{}
   def process_response_body(body) do
-    body
-    |> Poison.decode!
+    if String.contains?(body, "}\r\n{") do
+      body
+      |> String.split(~r/\r\n/, trim: true)
+      |> Enum.map(fn(part) -> Poison.decode!(part) end)
+    else
+      body
+      |> Poison.decode!
+    end
   end
 
   def build_endpoint(endpoint, action \\ "/json")

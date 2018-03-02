@@ -19,4 +19,9 @@ defmodule RemoteDockers.ImageTest do
     assert is_list(images)
   end
 
+  test "pull an image" do
+    status = Image.pull!(@host_config, "hello-world:latest")
+    assert is_list(status)
+  end
+
 end
