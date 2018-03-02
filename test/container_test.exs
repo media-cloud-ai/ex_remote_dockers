@@ -12,12 +12,12 @@ defmodule RemoteDockers.ContainerTest do
 
   test "list containers" do
     containers = Container.list!(@host_config)
-    assert is_list(containers.body)
+    assert is_list(containers)
   end
 
   test "list all containers" do
     containers = Container.list_all!(@host_config)
-    assert is_list(containers.body)
+    assert is_list(containers)
   end
 
   defp inspect_status(container, expected_status) do
@@ -31,15 +31,18 @@ defmodule RemoteDockers.ContainerTest do
     inspect_status(container, "created")
 
     # Start
-    Container.start!(container)
+    response = Container.start!(container)
+    assert response.id == container.id
     inspect_status(container, "running")
 
     # Stop
-    Container.stop!(container)
+    response = Container.stop!(container)
+    assert response.id == container.id
     inspect_status(container, "exited")
 
     # Delete
-    Container.remove!(container)
+    response = Container.remove!(container)
+    assert response == :ok
 
     assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
   end

@@ -26,9 +26,15 @@ defmodule RemoteDockers.Container do
   List running containers
   """
   def list!(host_config) do
-    Client.build_endpoint(@containers_uri)
-    |> Client.build_uri(host_config)
-    |> Client.get!([], HostConfig.get_options(host_config))
+    response =
+      Client.build_endpoint(@containers_uri)
+      |> Client.build_uri(host_config)
+      |> Client.get!([], HostConfig.get_options(host_config))
+
+    case response.status_code do
+      200 -> Enum.map(response.body, fn(container) -> to_container(container, host_config) end)
+      _ -> raise "unable to list containers"
+    end
   end
 
   @doc """
@@ -39,9 +45,15 @@ defmodule RemoteDockers.Container do
       HostConfig.get_options(host_config)
       |> Keyword.put(:query, %{"all" => true})
 
-    Client.build_endpoint(@containers_uri)
-    |> Client.build_uri(host_config)
-    |> Client.get!([], options)
+    response =
+      Client.build_endpoint(@containers_uri)
+      |> Client.build_uri(host_config)
+      |> Client.get!([], options)
+
+    case response.status_code do
+      200 -> Enum.map(response.body, fn(container) -> to_container(container, host_config) end)
+      _ -> raise "unable to list all containers"
+    end
   end
 
   @doc """
@@ -124,5 +136,22 @@ defmodule RemoteDockers.Container do
       200 -> response.body["State"]["Status"]
       _ -> raise "unable to retrieve container"
     end
+  end
+
+  defp to_container(%{} = container, %HostConfig{} = host_config) do
+    %RemoteDockers.Container{
+      host_config: host_config,
+      id: container["Id"],
+      command: container["Command"],
+      created: container["Created"],
+      image: container["Image"],
+      image_id: container["ImageID"],
+      labels: container["Labels"],
+      mounts: container["Mounts"],
+      names: container["Names"],
+      ports: container["Ports"],
+      state: container["State"],
+      status: container["Status"]
+    }
   end
 end
