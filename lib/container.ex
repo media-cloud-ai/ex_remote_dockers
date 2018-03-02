@@ -4,8 +4,21 @@ defmodule RemoteDockers.Container do
   Connector to manage containers
   """
 
-  @enforce_keys [:container_id, :host_config]
-  defstruct [:container_id, :host_config]
+  @enforce_keys [:host_config, :id]
+  defstruct [
+    :host_config,
+    :id,
+    :command,
+    :created,
+    :image,
+    :image_id,
+    :labels,
+    :mounts,
+    :names,
+    :ports,
+    :state,
+    :status
+  ]
 
   @containers_uri "/containers"
 
@@ -46,7 +59,7 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       201 -> %RemoteDockers.Container{
-          container_id: response.body["Id"],
+          id: response.body["Id"],
           host_config: host_config
         }
       _ -> raise "unable to create image"
@@ -58,7 +71,7 @@ defmodule RemoteDockers.Container do
   """
   def remove!(container) do
     response =
-      Client.build_endpoint(@containers_uri, container.container_id)
+      Client.build_endpoint(@containers_uri, container.id)
       |> Client.build_uri(container.host_config)
       |> Client.delete!()
 
@@ -73,7 +86,7 @@ defmodule RemoteDockers.Container do
   """
   def start!(container) do
     response =
-      Client.build_endpoint(@containers_uri, container.container_id <> "/start")
+      Client.build_endpoint(@containers_uri, container.id <> "/start")
       |> Client.build_uri(container.host_config)
       |> Client.post!("", [], HostConfig.get_options(container.host_config))
 
@@ -88,7 +101,7 @@ defmodule RemoteDockers.Container do
   """
   def stop!(container) do
     response =
-      Client.build_endpoint(@containers_uri, container.container_id <> "/stop")
+      Client.build_endpoint(@containers_uri, container.id <> "/stop")
       |> Client.build_uri(container.host_config)
       |> Client.post!("", [], HostConfig.get_options(container.host_config))
 
@@ -103,7 +116,7 @@ defmodule RemoteDockers.Container do
   """
   def get_status!(%RemoteDockers.Container{} = container) do
     response =
-      Client.build_endpoint(@containers_uri, container.container_id <> "/json")
+      Client.build_endpoint(@containers_uri, container.id <> "/json")
       |> Client.build_uri(container.host_config)
       |> Client.get!()
 
