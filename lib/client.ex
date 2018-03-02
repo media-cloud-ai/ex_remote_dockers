@@ -15,15 +15,16 @@ defmodule RemoteDockers.Client do
     |> Keyword.put(:recv_timeout, 60000)
   end
 
-  def process_response_body(""), do: %{}
+  def process_response_body(""), do: nil
   def process_response_body(body) do
-    if String.contains?(body, "}\r\n{") do
-      body
-      |> String.split(~r/\r\n/, trim: true)
-      |> Enum.map(fn(part) -> Poison.decode!(part) end)
-    else
+    try do
       body
       |> Poison.decode!
+    rescue
+      _ ->
+        body
+        |> String.split("\n", trim: true)
+        |> Enum.map(fn (line) -> Poison.decode!(line) end)
     end
   end
 
