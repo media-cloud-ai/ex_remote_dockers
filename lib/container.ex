@@ -62,10 +62,9 @@ defmodule RemoteDockers.Container do
   def create!(host_config, name, image) do
     options =
       HostConfig.get_options(host_config)
-      |> Keyword.put(:name, name)
 
     response =
-      Client.build_endpoint(@containers_uri, "create")
+      Client.build_endpoint(@containers_uri, "create?name=" <> name)
       |> Client.build_uri(host_config)
       |> Client.post!(%{"Image": image} |> Poison.encode!, [], options)
 
@@ -74,7 +73,7 @@ defmodule RemoteDockers.Container do
           id: response.body["Id"],
           host_config: host_config
         }
-      _ -> raise "unable to create image"
+      _ -> raise "unable to create image: " <> response.body["message"]
     end
   end
 
