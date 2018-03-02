@@ -15,9 +15,17 @@ defmodule RemoteDockers.ContainerTest do
     assert is_list(containers)
   end
 
+  test "fail listing containers" do
+    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list!("host_config") end)
+  end
+
   test "list all containers" do
     containers = Container.list_all!(@host_config)
     assert is_list(containers)
+  end
+
+  test "fail listing all containers" do
+    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list_all!("host_config") end)
   end
 
   defp inspect_status(container, expected_status) do

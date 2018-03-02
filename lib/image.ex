@@ -23,7 +23,8 @@ defmodule RemoteDockers.Image do
   @doc """
   Returns a list of images
   """
-  def list!(host_config) do
+  @spec list!(HostConfig.t) :: list(RemoteDockers.Image)
+  def list!(%HostConfig{} = host_config) do
     response =
       Client.build_endpoint(@images_uri)
       |> Client.build_uri(host_config)
@@ -37,11 +38,13 @@ defmodule RemoteDockers.Image do
       _ -> raise "unable to list images"
     end
   end
+  def list!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
   List all images (with children)
   """
-  def list_all!(host_config) do
+  @spec list_all!(HostConfig.t) :: list(RemoteDockers.Image)
+  def list_all!(%HostConfig{} = host_config) do
     options =
       HostConfig.get_options(host_config)
       |> Keyword.put(:query, %{"all" => true})
@@ -59,6 +62,7 @@ defmodule RemoteDockers.Image do
       _ -> raise "unable to list all images"
     end
   end
+  def list_all!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
   Pull a Docker image from a repository.
@@ -69,7 +73,8 @@ defmodule RemoteDockers.Image do
   the `hello-world` image.
 
   """
-  def pull!(host_config, name) do
+  @spec pull!(HostConfig.t, bitstring) :: list(Map.t)
+  def pull!(%HostConfig{} = host_config, name) do
     options =
       HostConfig.get_options(host_config)
 
@@ -83,6 +88,7 @@ defmodule RemoteDockers.Image do
       _ -> raise "unable to pull image with name: " <> name
     end
   end
+  def pull!(_, _), do: raise ArgumentError.exception("Invalid host config type")
 
 
   defp to_image(%{} = image, %HostConfig{} = host_config) do

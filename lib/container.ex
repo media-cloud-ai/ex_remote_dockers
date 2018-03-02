@@ -25,7 +25,8 @@ defmodule RemoteDockers.Container do
   @doc """
   List running containers
   """
-  def list!(host_config) do
+  @spec list!(HostConfig.t) :: list(RemoteDockers.Container)
+  def list!(%HostConfig{} = host_config) do
     response =
       Client.build_endpoint(@containers_uri)
       |> Client.build_uri(host_config)
@@ -39,11 +40,13 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to list containers"
     end
   end
+  def list!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
   List all containers
   """
-  def list_all!(host_config) do
+  @spec list_all!(HostConfig.t) :: list(RemoteDockers.Container)
+  def list_all!(%HostConfig{} = host_config) do
     options =
       HostConfig.get_options(host_config)
       |> Keyword.put(:query, %{"all" => true})
@@ -61,11 +64,13 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to list all containers"
     end
   end
+  def list_all!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
   Create a container
   """
-  def create!(host_config, name, image) do
+  @spec create!(HostConfig.t, bitstring, bitstring) :: RemoteDockers.Container
+  def create!(%HostConfig{} = host_config, name, image) do
     options =
       HostConfig.get_options(host_config)
 
@@ -83,11 +88,13 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to create image: " <> response.body["message"]
     end
   end
+  def create!(_, _, _), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
   Remove a container
   """
-  def remove!(container) do
+  @spec remove!(RemoteDockers.Container) :: atom
+  def remove!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id)
       |> Client.build_uri(container.host_config)
@@ -98,11 +105,13 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to delete container"
     end
   end
+  def remove!(_), do: raise ArgumentError.exception("Invalid container type")
 
   @doc """
   Start a container
   """
-  def start!(container) do
+  @spec start!(RemoteDockers.Container) :: RemoteDockers.Container
+  def start!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/start")
       |> Client.build_uri(container.host_config)
@@ -113,11 +122,13 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to start container"
     end
   end
+  def start!(_), do: raise ArgumentError.exception("Invalid container type")
 
   @doc """
   Stop a container
   """
-  def stop!(container) do
+  @spec stop!(RemoteDockers.Container) :: RemoteDockers.Container
+  def stop!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/stop")
       |> Client.build_uri(container.host_config)
@@ -128,10 +139,12 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to stop container"
     end
   end
+  def stop!(_), do: raise ArgumentError.exception("Invalid container type")
 
   @doc """
   Get status of a container
   """
+  @spec get_status!(RemoteDockers.Container) :: bitstring
   def get_status!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/json")
@@ -143,6 +156,7 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to retrieve container"
     end
   end
+  def get_status!(_), do: raise ArgumentError.exception("Invalid container type")
 
   defp to_container(%{} = container, %HostConfig{} = host_config) do
     %RemoteDockers.Container{
