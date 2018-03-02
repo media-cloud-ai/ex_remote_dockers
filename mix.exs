@@ -4,7 +4,7 @@ defmodule RemoteDockers.MixProject do
   def project do
     [
       app: :remote_dockers,
-      version: "1.0.0"
+      version: "1.0.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
