@@ -73,7 +73,7 @@ defmodule RemoteDockers.Image do
       |> Client.post!("", [], options)
 
     case response.status_code do
-      200 -> to_pull_status(response.body)
+      200 -> format_status(response.body)
       _ -> raise "unable to pull a " <> name <> " image"
     end
   end
@@ -95,20 +95,22 @@ defmodule RemoteDockers.Image do
     }
   end
 
-  defp to_pull_status(steps) do
-    steps
-    |> Enum.map_reduce("", fn step, acc ->
-        acc
-          |> get_id(step["id"])
-          |> put_id(step)
-      end)
-    |> elem(0)
+  defp format_status(steps, prev_id \\ nil, result \\ [])
+  defp format_status([], _prev_id, result), do: result
+  defp format_status([step | steps], prev_id, result) do
+    {step, id} =
+      case Map.get(step, "id", nil) do
+        nil ->
+          step =
+            case Map.get(step, "error", nil) do
+              nil -> Map.put(step, "id", prev_id)
+              _ -> step
+            end
+          {step, prev_id}
+        id -> {step, id}
+      end
+    result = List.insert_at(result, -1, step)
+    format_status(steps, id, result)
   end
-
-  defp get_id(acc, id) when is_nil(id), do: acc
-  defp get_id(_acc, id), do: id
-
-  defp put_id(acc, %{"error" => _error} = step), do: {step, acc}
-  defp put_id(acc, step), do: {Map.put(step, "id", acc), acc}
 
 end
