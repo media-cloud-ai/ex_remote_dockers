@@ -20,5 +20,6 @@ install:
   - mix deps.get
 
 scripts:
-  - mix test
+  - mix compile
+  - mix docs
 
