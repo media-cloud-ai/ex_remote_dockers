@@ -30,7 +30,10 @@ defmodule RemoteDockers.Image do
       |> Client.get!([], HostConfig.get_options(host_config))
 
     case response.status_code do
-      200 -> Enum.map(response.body, fn(image) -> to_image(image, host_config) end)
+      200 ->
+        Enum.map(response.body, fn(image) ->
+          to_image(image, host_config)
+        end)
       _ -> raise "unable to list images"
     end
   end
@@ -49,7 +52,10 @@ defmodule RemoteDockers.Image do
       |> Client.get!([], options)
 
     case response.status_code do
-      200 -> Enum.map(response.body, fn(image) -> to_image(image, host_config) end)
+      200 ->
+        Enum.map(response.body, fn(image) ->
+          to_image(image, host_config)
+        end)
       _ -> raise "unable to list all images"
     end
   end
@@ -74,7 +80,7 @@ defmodule RemoteDockers.Image do
 
     case response.status_code do
       200 -> format_status(response.body)
-      _ -> raise "unable to pull a " <> name <> " image"
+      _ -> raise "unable to pull image with name: " <> name
     end
   end
 

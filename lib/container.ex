@@ -32,7 +32,10 @@ defmodule RemoteDockers.Container do
       |> Client.get!([], HostConfig.get_options(host_config))
 
     case response.status_code do
-      200 -> Enum.map(response.body, fn(container) -> to_container(container, host_config) end)
+      200 ->
+        Enum.map(response.body, fn(container) ->
+          to_container(container, host_config)
+        end)
       _ -> raise "unable to list containers"
     end
   end
@@ -51,7 +54,10 @@ defmodule RemoteDockers.Container do
       |> Client.get!([], options)
 
     case response.status_code do
-      200 -> Enum.map(response.body, fn(container) -> to_container(container, host_config) end)
+      200 ->
+        Enum.map(response.body, fn(container) ->
+          to_container(container, host_config)
+        end)
       _ -> raise "unable to list all containers"
     end
   end
@@ -69,7 +75,8 @@ defmodule RemoteDockers.Container do
       |> Client.post!(%{"Image": image} |> Poison.encode!, [], options)
 
     case response.status_code do
-      201 -> %RemoteDockers.Container{
+      201 ->
+        %RemoteDockers.Container{
           id: response.body["Id"],
           host_config: host_config
         }
