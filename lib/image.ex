@@ -70,7 +70,7 @@ defmodule RemoteDockers.Image do
     response =
       Client.build_endpoint(@images_uri, "/create?fromImage=" <> name)
       |> Client.build_uri(host_config)
-      |> Client.post!([], options)
+      |> Client.post!("", [], options)
 
     case response.status_code do
       200 -> to_pull_status(response.body)
