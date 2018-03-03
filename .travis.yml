@@ -12,6 +12,6 @@ install:
   - mix local.rebar --force
   - mix deps.get
 
-scripts:
+script:
   - mix compile
 
