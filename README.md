@@ -1,4 +1,4 @@
-# ex_remote_dockers
+# remote_dockers
 Elixir library to manage multiple remote Docker instances through the HTTP API. Those Docker daemons must be listening a TCP interface.
 
 See the following Docker documentation:
