@@ -12,10 +12,10 @@ defmodule RemoteDockers.ContainerConfig do
   Build a container configuration with a specified `image_name`.
 
   ## Example:
-
+    ```elixir
     iex> ContainerConfig.new("hello-world")
     %ContainerConfig{:Image => "hello-world", :Env => [], :HostConfig => %{}}
-
+    ```
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
@@ -29,7 +29,7 @@ defmodule RemoteDockers.ContainerConfig do
   Add an environment variable to the specified container configuration.
 
   ## Example:
-
+    ```elixir
     iex> ContainerConfig.new("hello-world")
     ...> |> ContainerConfig.add_env("TOTO", "/path/to/toto")
     %ContainerConfig{
@@ -37,7 +37,7 @@ defmodule RemoteDockers.ContainerConfig do
       :Env => ["TOTO=/path/to/toto"],
       :HostConfig => %{}
     }
-
+    ```
   """
   @spec add_env(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
   def add_env(%RemoteDockers.ContainerConfig{} = container_config, key, value) do
@@ -84,7 +84,7 @@ defmodule RemoteDockers.ContainerConfig do
   See `add_mount_point/2`
 
   ## Example:
-
+    ```elixir
     iex> ContainerConfig.new("image_name")
     ...> |> ContainerConfig.add_mount_point("/path/to/a/host/mount/point", "/path/to/a/container/directory")
     ...> |> ContainerConfig.add_mount_point("/path/to/another/host/mount/point", "/path/to/another/container/directory")
@@ -106,7 +106,7 @@ defmodule RemoteDockers.ContainerConfig do
         ]
       }
     }
-
+    ```
   """
   @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring, bitstring) :: RemoteDockers.ContainerConfig
   def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, source, target, type \\ "bind") do
