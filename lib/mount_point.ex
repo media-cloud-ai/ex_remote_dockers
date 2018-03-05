@@ -14,6 +14,12 @@ defmodule RemoteDockers.MountPoint do
 
   @doc """
   Build a new mount point description.
+
+  ## Example:
+
+    iex> MountPoint.new("source_path", "target_path", "mount_type")
+    %MountPoint{:Source => "source_path", :Target => "target_path", :Type => "mount_type"}
+
   """
   def new(source, target, type) do
     %RemoteDockers.MountPoint{
