@@ -1,6 +1,9 @@
 defmodule RemoteDockers.ContainerConfigTest do
   use ExUnit.Case
-  alias RemoteDockers.ContainerConfig
+  alias RemoteDockers.{
+    ContainerConfig,
+    MountPoint
+  }
   doctest RemoteDockers.ContainerConfig
 
   test "default configuration" do
@@ -35,12 +38,12 @@ defmodule RemoteDockers.ContainerConfigTest do
         :Env => [],
         :HostConfig => %{
           :Mounts => [
-            %{
+            %MountPoint{
               :Source => "/path/to/a/host/mount/point",
               :Target => "/path/to/a/container/directory",
               :Type => "bind"
             },
-            %{
+            %MountPoint{
               :Source => "/path/to/another/host/mount/point",
               :Target => "/path/to/another/container/directory",
               :Type => "bind"

@@ -1,4 +1,6 @@
 defmodule RemoteDockers.ContainerConfig do
+  alias RemoteDockers.MountPoint
+
   @enforce_keys [:Image]
   defstruct [
     :Image,
@@ -45,9 +47,9 @@ defmodule RemoteDockers.ContainerConfig do
     |> ContainerConfig.add(mount_point)
     ```
   """
-  @spec add_mount_point(RemoteDockers.ContainerConfig, Map.t) :: RemoteDockers.ContainerConfig
-  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, %{} = mount_point) do
-    host_config = Map.get(container_config, :HostConfig)
+  @spec add_mount_point(RemoteDockers.ContainerConfig, MountPoint) :: RemoteDockers.ContainerConfig
+  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, %MountPoint{} = mount_point) do
+    host_config = Map.get(container_config, :HostConfig, %{})
 
     mount_points =
       Map.get(host_config, :Mounts)
@@ -66,14 +68,9 @@ defmodule RemoteDockers.ContainerConfig do
 
   See `add_mount_point/2`
   """
-  @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
-  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, source, target) do
-    mount = %{
-      "Source": source,
-      "Target": target,
-      "Type": "bind"
-    }
-    add_mount_point(container_config, mount)
+  @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring, bitstring) :: RemoteDockers.ContainerConfig
+  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, source, target, type \\ "bind") do
+    add_mount_point(container_config, MountPoint.new(source, target, type))
   end
 
 end
