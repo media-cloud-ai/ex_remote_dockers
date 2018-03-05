@@ -3,7 +3,7 @@ defmodule RemoteDockers.ContainerTest do
   alias RemoteDockers.{Container, HostConfig}
   doctest RemoteDockers.Container
 
-  @host_config HostConfig.build(
+  @host_config HostConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),

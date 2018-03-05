@@ -13,8 +13,8 @@ defmodule RemoteDockers.HostConfig do
   port: #{@default_port}
   ```
   """
-  def build() do
-    build("localhost", @default_port)
+  def new() do
+    new("localhost", @default_port)
   end
 
   @doc """
@@ -25,14 +25,14 @@ defmodule RemoteDockers.HostConfig do
   port: #{@default_port}
   ```
   """
-  def build(hostname) do
-    build(hostname, @default_port)
+  def new(hostname) do
+    new(hostname, @default_port)
   end
 
   @doc """
   Build configuration with specific hostname and port
   """
-  def build(hostname, port) do
+  def new(hostname, port) do
     %RemoteDockers.HostConfig{
       hostname: hostname,
       port: port
@@ -47,14 +47,14 @@ defmodule RemoteDockers.HostConfig do
   port: #{@default_port}
   ```
   """
-  def build(hostname, certfile, keyfile) do
-    build(hostname, @default_port, certfile, keyfile)
+  def new(hostname, certfile, keyfile) do
+    new(hostname, @default_port, certfile, keyfile)
   end
 
   @doc """
   Build configuration with hostname, port and SSL
   """
-  def build(hostname, port, certfile, keyfile) do
+  def new(hostname, port, certfile, keyfile) do
     %RemoteDockers.HostConfig{
       hostname: hostname,
       port: port,

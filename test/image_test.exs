@@ -3,7 +3,7 @@ defmodule RemoteDockers.ImageTest do
   alias RemoteDockers.{Image, HostConfig}
   doctest RemoteDockers.Image
 
-  @host_config HostConfig.build(
+  @host_config HostConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),
