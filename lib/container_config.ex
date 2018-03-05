@@ -15,9 +15,7 @@ defmodule RemoteDockers.ContainerConfig do
     %RemoteDockers.ContainerConfig{
       "Image": image_name,
       "Env": [],
-      "HostConfig": %{
-        "Mounts": []
-      }
+      "HostConfig": %{}
     }
   end
 

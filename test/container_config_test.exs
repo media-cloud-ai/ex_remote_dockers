@@ -8,7 +8,7 @@ defmodule RemoteDockers.ContainerConfigTest do
 
   test "default configuration" do
     image_name = "hello-world"
-    assert ContainerConfig.new(image_name) == %ContainerConfig{:Image => image_name, :Env => [], :HostConfig => %{:Mounts => []}}
+    assert ContainerConfig.new(image_name) == %ContainerConfig{:Image => image_name, :Env => [], :HostConfig => %{}}
   end
 
   test "add env" do
@@ -20,9 +20,7 @@ defmodule RemoteDockers.ContainerConfigTest do
     assert container_config == %ContainerConfig{
         :Image => image_name,
         :Env => ["TOTO=/path/to/toto"],
-        :HostConfig => %{
-          :Mounts => []
-        }
+        :HostConfig => %{}
       }
   end
 
