@@ -9,7 +9,7 @@ defmodule RemoteDockers.ContainerConfig do
   ]
 
   @doc """
-  Build an container configuration with a specified `image_name`.
+  Build a container configuration with a specified `image_name`.
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
@@ -52,7 +52,7 @@ defmodule RemoteDockers.ContainerConfig do
     host_config = Map.get(container_config, :HostConfig, %{})
 
     mount_points =
-      Map.get(host_config, :Mounts)
+      Map.get(host_config, :Mounts, [])
       |> List.insert_at(-1, mount_point)
 
     host_config = Map.put(host_config, :Mounts, mount_points)
