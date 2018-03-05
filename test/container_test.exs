@@ -2,12 +2,12 @@ defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
   alias RemoteDockers.{
       Container,
-      HostConfig,
+      DockerHostConfig,
       ContainerConfig
     }
   doctest RemoteDockers.Container
 
-  @host_config HostConfig.new(
+  @host_config DockerHostConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),

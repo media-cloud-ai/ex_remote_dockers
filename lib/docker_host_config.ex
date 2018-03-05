@@ -1,4 +1,4 @@
-defmodule RemoteDockers.HostConfig do
+defmodule RemoteDockers.DockerHostConfig do
   @enforce_keys [:hostname, :port]
   defstruct [:hostname, :port, :ssl]
 
@@ -33,7 +33,7 @@ defmodule RemoteDockers.HostConfig do
   Build configuration with specific hostname and port
   """
   def new(hostname, port) do
-    %RemoteDockers.HostConfig{
+    %RemoteDockers.DockerHostConfig{
       hostname: hostname,
       port: port
     }
@@ -55,7 +55,7 @@ defmodule RemoteDockers.HostConfig do
   Build configuration with hostname, port and SSL
   """
   def new(hostname, port, certfile, keyfile) do
-    %RemoteDockers.HostConfig{
+    %RemoteDockers.DockerHostConfig{
       hostname: hostname,
       port: port,
       ssl: [
@@ -68,7 +68,7 @@ defmodule RemoteDockers.HostConfig do
   @doc """
   Get HTTPoison default options with ssl if enabled
   """
-  def get_options(%RemoteDockers.HostConfig{ssl: nil} = _host_config), do: []
+  def get_options(%RemoteDockers.DockerHostConfig{ssl: nil} = _host_config), do: []
   def get_options(host_config) do
     [
       ssl: host_config.ssl
