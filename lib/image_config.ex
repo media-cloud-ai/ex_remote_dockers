@@ -59,7 +59,7 @@ defmodule RemoteDockers.ImageConfig do
   end
 
   @doc """
-  Add a volume mount point binding to the image configuration.
+  Add a volume mount point binding (i.e. mount type is `bind`) to the image configuration.
 
   `source` and `target` values are respectively mapped to the `"Source"` and `"Target"` mount point
   description fields.

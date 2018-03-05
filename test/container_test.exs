@@ -1,6 +1,10 @@
 defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
-  alias RemoteDockers.{Container, HostConfig}
+  alias RemoteDockers.{
+      Container,
+      HostConfig,
+      ImageConfig
+    }
   doctest RemoteDockers.Container
 
   @host_config HostConfig.new(
@@ -36,6 +40,34 @@ defmodule RemoteDockers.ContainerTest do
   test "create & remove container" do
     # Create
     container = Container.create!(@host_config, "new_container", "rabbitmq:management")
+    inspect_status(container, "created")
+
+    # Delete
+    response = Container.remove!(container)
+    assert response == :ok
+
+    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+  end
+
+  test "create & remove container with image config" do
+    # Create
+    image_config =
+      ImageConfig.new("rabbitmq:management")
+      |> ImageConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
+      |> ImageConfig.add_mount_point("/tmp", "/opt/rabbitmq")
+    container = Container.create!(@host_config, "new_container", image_config)
+    inspect_status(container, "created")
+
+    # Delete
+    response = Container.remove!(container)
+    assert response == :ok
+
+    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+  end
+
+  test "create, start, stop & remove container" do
+    # Create
+    container = Container.create!(@host_config, "new_container", ImageConfig.new("rabbitmq:management"))
     inspect_status(container, "created")
 
     # Start

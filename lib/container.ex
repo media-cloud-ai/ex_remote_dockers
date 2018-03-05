@@ -1,5 +1,9 @@
 defmodule RemoteDockers.Container do
-  alias RemoteDockers.{Client, HostConfig}
+  alias RemoteDockers.{
+      Client,
+      HostConfig,
+      ImageConfig
+    }
   @moduledoc """
   Connector to manage containers
   """
@@ -67,17 +71,29 @@ defmodule RemoteDockers.Container do
   def list_all!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
-  Create a container
+  Create a container from the specified container's image configuration, or a simple image name.
+
+  ## Examples:
+  ```elixir
+  image_config =
+    ImageConfig.new("MyImage")
+    |> ImageConfig.add_env("MY_ENV_VAR", "my_env_var_value")
+  Container.create!(HostConfig.new(), "my_container", image_config)
+  ```
+
+  ```elixir
+  Container.create!(HostConfig.new(), "my_container", "MyImage")
+  ```
   """
-  @spec create!(HostConfig.t, bitstring, bitstring) :: RemoteDockers.Container
-  def create!(%HostConfig{} = host_config, name, image) do
+  @spec create!(HostConfig.t, bitstring, ImageConfig.t) :: RemoteDockers.Container
+  def create!(%HostConfig{} = host_config, name, %ImageConfig{} = image_config) do
     options =
       HostConfig.get_options(host_config)
 
     response =
       Client.build_endpoint(@containers_uri, "create?name=" <> name)
       |> Client.build_uri(host_config)
-      |> Client.post!(%{"Image": image} |> Poison.encode!, [], options)
+      |> Client.post!(image_config |> Poison.encode!, [], options)
 
     case response.status_code do
       201 ->
@@ -88,6 +104,11 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to create image: " <> response.body["message"]
     end
   end
+  @spec create!(HostConfig.t, bitstring, bitstring) :: RemoteDockers.Container
+  def create!(%HostConfig{} = host_config, name, image_name) do
+    create!(host_config, name, ImageConfig.new(image_name))
+  end
+
   def create!(_, _, _), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
