@@ -12,6 +12,12 @@ defmodule RemoteDockers.DockerHostConfig do
   hostname: "localhost"
   port: #{@default_port}
   ```
+
+  ## Example:
+    ```elixir
+    iex> DockerHostConfig.new()
+    %DockerHostConfig{hostname: "localhost", port: 2376}
+    ```
   """
   def new() do
     new("localhost", @default_port)
@@ -24,6 +30,12 @@ defmodule RemoteDockers.DockerHostConfig do
   ```
   port: #{@default_port}
   ```
+
+  ## Example:
+    ```elixir
+    iex> DockerHostConfig.new("192.168.99.100")
+    %DockerHostConfig{hostname: "192.168.99.100", port: 2376}
+    ```
   """
   def new(hostname) do
     new(hostname, @default_port)
@@ -31,6 +43,12 @@ defmodule RemoteDockers.DockerHostConfig do
 
   @doc """
   Build configuration with specific hostname and port
+
+  ## Example:
+    ```elixir
+    iex> DockerHostConfig.new("192.168.99.100", 2345)
+    %DockerHostConfig{hostname: "192.168.99.100", port: 2345}
+    ```
   """
   def new(hostname, port) do
     %RemoteDockers.DockerHostConfig{
@@ -46,6 +64,19 @@ defmodule RemoteDockers.DockerHostConfig do
   ```
   port: #{@default_port}
   ```
+
+  ## Example:
+    ```elixir
+    iex> DockerHostConfig.new("192.168.99.100", "cert.pem", "key.pem")
+    %DockerHostConfig{
+      hostname: "192.168.99.100",
+      port: 2376,
+      ssl: [
+        certfile: "cert.pem",
+        keyfile: "key.pem"
+      ]
+    }
+    ```
   """
   def new(hostname, certfile, keyfile) do
     new(hostname, @default_port, certfile, keyfile)
@@ -53,6 +84,19 @@ defmodule RemoteDockers.DockerHostConfig do
 
   @doc """
   Build configuration with hostname, port and SSL
+
+  ## Example:
+    ```elixir
+    iex> DockerHostConfig.new("192.168.99.100", 2345, "cert.pem", "key.pem")
+    %DockerHostConfig{
+      hostname: "192.168.99.100",
+      port: 2345,
+      ssl: [
+        certfile: "cert.pem",
+        keyfile: "key.pem"
+      ]
+    }
+    ```
   """
   def new(hostname, port, certfile, keyfile) do
     %RemoteDockers.DockerHostConfig{
