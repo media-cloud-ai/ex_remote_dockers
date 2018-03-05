@@ -3,7 +3,7 @@ defmodule RemoteDockers.ContainerTest do
   alias RemoteDockers.{
       Container,
       HostConfig,
-      ImageConfig
+      ContainerConfig
     }
   doctest RemoteDockers.Container
 
@@ -49,13 +49,13 @@ defmodule RemoteDockers.ContainerTest do
     assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
   end
 
-  test "create & remove container with image config" do
+  test "create & remove container with configuration" do
     # Create
-    image_config =
-      ImageConfig.new("rabbitmq:management")
-      |> ImageConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
-      |> ImageConfig.add_mount_point("/tmp", "/opt/rabbitmq")
-    container = Container.create!(@host_config, "new_container", image_config)
+    container_config =
+      ContainerConfig.new("rabbitmq:management")
+      |> ContainerConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
+      |> ContainerConfig.add_mount_point("/tmp", "/opt/rabbitmq")
+    container = Container.create!(@host_config, "new_container", container_config)
     inspect_status(container, "created")
 
     # Delete
@@ -67,7 +67,7 @@ defmodule RemoteDockers.ContainerTest do
 
   test "create, start, stop & remove container" do
     # Create
-    container = Container.create!(@host_config, "new_container", ImageConfig.new("rabbitmq:management"))
+    container = Container.create!(@host_config, "new_container", ContainerConfig.new("rabbitmq:management"))
     inspect_status(container, "created")
 
     # Start

@@ -2,7 +2,7 @@ defmodule RemoteDockers.Container do
   alias RemoteDockers.{
       Client,
       HostConfig,
-      ImageConfig
+      ContainerConfig
     }
   @moduledoc """
   Connector to manage containers
@@ -75,25 +75,25 @@ defmodule RemoteDockers.Container do
 
   ## Examples:
   ```elixir
-  image_config =
-    ImageConfig.new("MyImage")
-    |> ImageConfig.add_env("MY_ENV_VAR", "my_env_var_value")
-  Container.create!(HostConfig.new(), "my_container", image_config)
+  container_config =
+    ContainerConfig.new("MyImage")
+    |> ContainerConfig.add_env("MY_ENV_VAR", "my_env_var_value")
+  Container.create!(HostConfig.new(), "my_container", container_config)
   ```
 
   ```elixir
   Container.create!(HostConfig.new(), "my_container", "MyImage")
   ```
   """
-  @spec create!(HostConfig.t, bitstring, ImageConfig.t) :: RemoteDockers.Container
-  def create!(%HostConfig{} = host_config, name, %ImageConfig{} = image_config) do
+  @spec create!(HostConfig.t, bitstring, ContainerConfig.t) :: RemoteDockers.Container
+  def create!(%HostConfig{} = host_config, name, %ContainerConfig{} = container_config) do
     options =
       HostConfig.get_options(host_config)
 
     response =
       Client.build_endpoint(@containers_uri, "create?name=" <> name)
       |> Client.build_uri(host_config)
-      |> Client.post!(image_config |> Poison.encode!, [], options)
+      |> Client.post!(container_config |> Poison.encode!, [], options)
 
     case response.status_code do
       201 ->
@@ -106,7 +106,7 @@ defmodule RemoteDockers.Container do
   end
   @spec create!(HostConfig.t, bitstring, bitstring) :: RemoteDockers.Container
   def create!(%HostConfig{} = host_config, name, image_name) do
-    create!(host_config, name, ImageConfig.new(image_name))
+    create!(host_config, name, ContainerConfig.new(image_name))
   end
 
   def create!(_, _, _), do: raise ArgumentError.exception("Invalid host config type")

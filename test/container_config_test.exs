@@ -1,20 +1,20 @@
-defmodule RemoteDockers.ImageConfigTest do
+defmodule RemoteDockers.ContainerConfigTest do
   use ExUnit.Case
-  alias RemoteDockers.ImageConfig
-  doctest RemoteDockers.ImageConfig
+  alias RemoteDockers.ContainerConfig
+  doctest RemoteDockers.ContainerConfig
 
   test "default configuration" do
     image_name = "hello-world"
-    assert ImageConfig.new(image_name) == %ImageConfig{:Image => image_name, :Env => [], :HostConfig => %{:Mounts => []}}
+    assert ContainerConfig.new(image_name) == %ContainerConfig{:Image => image_name, :Env => [], :HostConfig => %{:Mounts => []}}
   end
 
   test "add env" do
     image_name = "hello-world"
-    image_config =
-      ImageConfig.new(image_name)
-      |> ImageConfig.add_env("TOTO", "/path/to/toto")
+    container_config =
+      ContainerConfig.new(image_name)
+      |> ContainerConfig.add_env("TOTO", "/path/to/toto")
 
-    assert image_config == %ImageConfig{
+    assert container_config == %ContainerConfig{
         :Image => image_name,
         :Env => ["TOTO=/path/to/toto"],
         :HostConfig => %{
@@ -25,12 +25,12 @@ defmodule RemoteDockers.ImageConfigTest do
 
   test "add mount point" do
     image_name = "hello-world"
-    image_config =
-      ImageConfig.new(image_name)
-      |> ImageConfig.add_mount_point("/path/to/a/host/mount/point", "/path/to/a/container/directory")
-      |> ImageConfig.add_mount_point("/path/to/another/host/mount/point", "/path/to/another/container/directory")
+    container_config =
+      ContainerConfig.new(image_name)
+      |> ContainerConfig.add_mount_point("/path/to/a/host/mount/point", "/path/to/a/container/directory")
+      |> ContainerConfig.add_mount_point("/path/to/another/host/mount/point", "/path/to/another/container/directory")
 
-    assert image_config == %ImageConfig{
+    assert container_config == %ContainerConfig{
         :Image => image_name,
         :Env => [],
         :HostConfig => %{
