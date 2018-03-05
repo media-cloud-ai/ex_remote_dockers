@@ -71,6 +71,29 @@ defmodule RemoteDockers.Container do
   def list_all!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
+  Build a new Container object.
+
+  ## Example:
+    ```elixir
+    iex> Container.new(DockerHostConfig.new("localhost", 2345), "my_container_id")
+    %Container{
+      docker_host_config: %DockerHostConfig{
+        hostname: "localhost",
+        port: 2345
+      },
+      id: "my_container_id"
+    }
+    ```
+  """
+  @spec new(DockerHostConfig.t, bitstring) :: RemoteDockers.Container
+  def new(%DockerHostConfig{} = docker_host_config, container_id) do
+    %RemoteDockers.Container{
+      docker_host_config: docker_host_config,
+      id: container_id
+    }
+  end
+
+  @doc """
   Create a container from the specified container's image configuration, or a simple image name.
 
   ## Examples:
