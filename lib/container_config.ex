@@ -10,6 +10,12 @@ defmodule RemoteDockers.ContainerConfig do
 
   @doc """
   Build a container configuration with a specified `image_name`.
+
+  ## Example:
+
+    iex> ContainerConfig.new("hello-world")
+    %ContainerConfig{:Image => "hello-world", :Env => [], :HostConfig => %{}}
+
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
@@ -21,6 +27,17 @@ defmodule RemoteDockers.ContainerConfig do
 
   @doc """
   Add an environment variable to the specified container configuration.
+
+  ## Example:
+
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.add_env("TOTO", "/path/to/toto")
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => ["TOTO=/path/to/toto"],
+      :HostConfig => %{}
+    }
+
   """
   @spec add_env(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
   def add_env(%RemoteDockers.ContainerConfig{} = container_config, key, value) do
@@ -65,6 +82,31 @@ defmodule RemoteDockers.ContainerConfig do
   description fields.
 
   See `add_mount_point/2`
+
+  ## Example:
+
+    iex> ContainerConfig.new("image_name")
+    ...> |> ContainerConfig.add_mount_point("/path/to/a/host/mount/point", "/path/to/a/container/directory")
+    ...> |> ContainerConfig.add_mount_point("/path/to/another/host/mount/point", "/path/to/another/container/directory")
+    %ContainerConfig{
+      :Image => "image_name",
+      :Env => [],
+      :HostConfig => %{
+        :Mounts => [
+          %MountPoint{
+            :Source => "/path/to/a/host/mount/point",
+            :Target => "/path/to/a/container/directory",
+            :Type => "bind"
+          },
+          %MountPoint{
+            :Source => "/path/to/another/host/mount/point",
+            :Target => "/path/to/another/container/directory",
+            :Type => "bind"
+          }
+        ]
+      }
+    }
+
   """
   @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring, bitstring) :: RemoteDockers.ContainerConfig
   def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, source, target, type \\ "bind") do
