@@ -57,6 +57,7 @@ defmodule RemoteDockers.DockerHostConfig do
     }
   end
 
+
   @doc """
   Build configuration with SSL
 
@@ -78,6 +79,7 @@ defmodule RemoteDockers.DockerHostConfig do
     }
     ```
   """
+  def new(hostname, nil, nil), do: new(hostname)
   def new(hostname, certfile, keyfile) do
     new(hostname, @default_port, certfile, keyfile)
   end
@@ -98,6 +100,7 @@ defmodule RemoteDockers.DockerHostConfig do
     }
     ```
   """
+  def new(hostname, port, nil, nil), do: new(hostname, port)
   def new(hostname, port, certfile, keyfile) do
     %RemoteDockers.DockerHostConfig{
       hostname: hostname,
