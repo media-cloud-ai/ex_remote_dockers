@@ -1,11 +1,11 @@
 defmodule RemoteDockers.Image do
-  alias RemoteDockers.{Client, HostConfig}
+  alias RemoteDockers.{Client, NodeConfig}
   @moduledoc """
   Connector to manage images
   """
-  @enforce_keys [:host_config, :id]
+  @enforce_keys [:node_config, :id]
   defstruct [
-    :host_config,
+    :node_config,
     :id,
     :containers,
     :created,
@@ -23,46 +23,46 @@ defmodule RemoteDockers.Image do
   @doc """
   Returns a list of images
   """
-  @spec list!(HostConfig.t) :: list(RemoteDockers.Image)
-  def list!(%HostConfig{} = host_config) do
+  @spec list!(NodeConfig.t) :: list(RemoteDockers.Image)
+  def list!(%NodeConfig{} = node_config) do
     response =
       Client.build_endpoint(@images_uri)
-      |> Client.build_uri(host_config)
-      |> Client.get!([], HostConfig.get_options(host_config))
+      |> Client.build_uri(node_config)
+      |> Client.get!([], NodeConfig.get_options(node_config))
 
     case response.status_code do
       200 ->
         Enum.map(response.body, fn(image) ->
-          to_image(image, host_config)
+          to_image(image, node_config)
         end)
       _ -> raise "unable to list images"
     end
   end
-  def list!(_), do: raise ArgumentError.exception("Invalid HostConfig type")
+  def list!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
   @doc """
   List all images (with children)
   """
-  @spec list_all!(HostConfig.t) :: list(RemoteDockers.Image)
-  def list_all!(%HostConfig{} = host_config) do
+  @spec list_all!(NodeConfig.t) :: list(RemoteDockers.Image)
+  def list_all!(%NodeConfig{} = node_config) do
     options =
-      HostConfig.get_options(host_config)
+      NodeConfig.get_options(node_config)
       |> Keyword.put(:query, %{"all" => true})
 
     response =
       Client.build_endpoint(@images_uri)
-      |> Client.build_uri(host_config)
+      |> Client.build_uri(node_config)
       |> Client.get!([], options)
 
     case response.status_code do
       200 ->
         Enum.map(response.body, fn(image) ->
-          to_image(image, host_config)
+          to_image(image, node_config)
         end)
       _ -> raise "unable to list all images"
     end
   end
-  def list_all!(_), do: raise ArgumentError.exception("Invalid HostConfig type")
+  def list_all!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
   @doc """
   Pull a Docker image from a repository.
@@ -73,14 +73,14 @@ defmodule RemoteDockers.Image do
   the `hello-world` image.
 
   """
-  @spec pull!(HostConfig.t, bitstring) :: list(Map.t)
-  def pull!(%HostConfig{} = host_config, name) do
+  @spec pull!(NodeConfig.t, bitstring) :: list(Map.t)
+  def pull!(%NodeConfig{} = node_config, name) do
     options =
-      HostConfig.get_options(host_config)
+      NodeConfig.get_options(node_config)
 
     response =
       Client.build_endpoint(@images_uri, "/create?fromImage=" <> name)
-      |> Client.build_uri(host_config)
+      |> Client.build_uri(node_config)
       |> Client.post!("", [], options)
 
     case response.status_code do
@@ -88,12 +88,12 @@ defmodule RemoteDockers.Image do
       _ -> raise "unable to pull image with name: " <> name
     end
   end
-  def pull!(_, _), do: raise ArgumentError.exception("Invalid HostConfig type")
+  def pull!(_, _), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
 
-  defp to_image(%{} = image, %HostConfig{} = host_config) do
+  defp to_image(%{} = image, %NodeConfig{} = node_config) do
     %RemoteDockers.Image{
-      host_config: host_config,
+      node_config: node_config,
       id: image["Id"],
       containers: image["Containers"],
       created: image["Created"],

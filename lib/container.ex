@@ -1,16 +1,16 @@
 defmodule RemoteDockers.Container do
   alias RemoteDockers.{
       Client,
-      HostConfig,
+      NodeConfig,
       ContainerConfig
     }
   @moduledoc """
   Connector to manage containers
   """
 
-  @enforce_keys [:host_config, :id]
+  @enforce_keys [:node_config, :id]
   defstruct [
-    :host_config,
+    :node_config,
     :id,
     :command,
     :created,
@@ -29,46 +29,46 @@ defmodule RemoteDockers.Container do
   @doc """
   List running containers
   """
-  @spec list!(HostConfig.t) :: list(RemoteDockers.Container)
-  def list!(%HostConfig{} = host_config) do
+  @spec list!(NodeConfig.t) :: list(RemoteDockers.Container)
+  def list!(%NodeConfig{} = node_config) do
     response =
       Client.build_endpoint(@containers_uri)
-      |> Client.build_uri(host_config)
-      |> Client.get!([], HostConfig.get_options(host_config))
+      |> Client.build_uri(node_config)
+      |> Client.get!([], NodeConfig.get_options(node_config))
 
     case response.status_code do
       200 ->
         Enum.map(response.body, fn(container) ->
-          to_container(container, host_config)
+          to_container(container, node_config)
         end)
       _ -> raise "unable to list containers"
     end
   end
-  def list!(_), do: raise ArgumentError.exception("Invalid HostConfig type")
+  def list!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
   @doc """
   List all containers
   """
-  @spec list_all!(HostConfig.t) :: list(RemoteDockers.Container)
-  def list_all!(%HostConfig{} = host_config) do
+  @spec list_all!(NodeConfig.t) :: list(RemoteDockers.Container)
+  def list_all!(%NodeConfig{} = node_config) do
     options =
-      HostConfig.get_options(host_config)
+      NodeConfig.get_options(node_config)
       |> Keyword.put(:params, %{"all" => true})
 
     response =
       Client.build_endpoint(@containers_uri)
-      |> Client.build_uri(host_config)
+      |> Client.build_uri(node_config)
       |> Client.get!([], options)
 
     case response.status_code do
       200 ->
         Enum.map(response.body, fn(container) ->
-          to_container(container, host_config)
+          to_container(container, node_config)
         end)
       _ -> raise "unable to list all containers"
     end
   end
-  def list_all!(_), do: raise ArgumentError.exception("Invalid HostConfig type")
+  def list_all!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
   @doc """
   Create a container from the specified container's image configuration, or a simple image name.
@@ -78,37 +78,37 @@ defmodule RemoteDockers.Container do
   container_config =
     ContainerConfig.new("MyImage")
     |> ContainerConfig.add_env("MY_ENV_VAR", "my_env_var_value")
-  Container.create!(HostConfig.new(), "my_container", container_config)
+  Container.create!(NodeConfig.new(), "my_container", container_config)
   ```
 
   ```elixir
-  Container.create!(HostConfig.new(), "my_container", "MyImage")
+  Container.create!(NodeConfig.new(), "my_container", "MyImage")
   ```
   """
-  @spec create!(HostConfig.t, bitstring, ContainerConfig.t) :: RemoteDockers.Container
-  def create!(%HostConfig{} = host_config, name, %ContainerConfig{} = container_config) do
+  @spec create!(NodeConfig.t, bitstring, ContainerConfig.t) :: RemoteDockers.Container
+  def create!(%NodeConfig{} = node_config, name, %ContainerConfig{} = container_config) do
     options =
-      HostConfig.get_options(host_config)
+      NodeConfig.get_options(node_config)
 
     response =
       Client.build_endpoint(@containers_uri, "create?name=" <> name)
-      |> Client.build_uri(host_config)
+      |> Client.build_uri(node_config)
       |> Client.post!(container_config |> Poison.encode!, [], options)
 
     case response.status_code do
       201 ->
         %RemoteDockers.Container{
           id: response.body["Id"],
-          host_config: host_config
+          node_config: node_config
         }
       _ -> raise "unable to create image: " <> response.body["message"]
     end
   end
-  @spec create!(HostConfig.t, bitstring, bitstring) :: RemoteDockers.Container
-  def create!(%HostConfig{} = host_config, name, image_name) do
-    create!(host_config, name, ContainerConfig.new(image_name))
+  @spec create!(NodeConfig.t, bitstring, bitstring) :: RemoteDockers.Container
+  def create!(%NodeConfig{} = node_config, name, image_name) do
+    create!(node_config, name, ContainerConfig.new(image_name))
   end
-  def create!(_, _, _), do: raise ArgumentError.exception("Invalid host config type")
+  def create!(_, _, _), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
   @doc """
   Remove a container
@@ -117,7 +117,7 @@ defmodule RemoteDockers.Container do
   def remove!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id)
-      |> Client.build_uri(container.host_config)
+      |> Client.build_uri(container.node_config)
       |> Client.delete!()
 
     case response.status_code do
@@ -134,8 +134,8 @@ defmodule RemoteDockers.Container do
   def start!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/start")
-      |> Client.build_uri(container.host_config)
-      |> Client.post!("", [], HostConfig.get_options(container.host_config))
+      |> Client.build_uri(container.node_config)
+      |> Client.post!("", [], NodeConfig.get_options(container.node_config))
 
     case response.status_code do
       204 -> container
@@ -151,8 +151,8 @@ defmodule RemoteDockers.Container do
   def stop!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/stop")
-      |> Client.build_uri(container.host_config)
-      |> Client.post!("", [], HostConfig.get_options(container.host_config))
+      |> Client.build_uri(container.node_config)
+      |> Client.post!("", [], NodeConfig.get_options(container.node_config))
 
     case response.status_code do
       204 -> container
@@ -168,7 +168,7 @@ defmodule RemoteDockers.Container do
   def get_status!(%RemoteDockers.Container{} = container) do
     response =
       Client.build_endpoint(@containers_uri, container.id <> "/json")
-      |> Client.build_uri(container.host_config)
+      |> Client.build_uri(container.node_config)
       |> Client.get!()
 
     case response.status_code do
@@ -178,9 +178,9 @@ defmodule RemoteDockers.Container do
   end
   def get_status!(_), do: raise ArgumentError.exception("Invalid container type")
 
-  defp to_container(%{} = container, %HostConfig{} = host_config) do
+  defp to_container(%{} = container, %NodeConfig{} = node_config) do
     %RemoteDockers.Container{
-      host_config: host_config,
+      node_config: node_config,
       id: container["Id"],
       command: container["Command"],
       created: container["Created"],

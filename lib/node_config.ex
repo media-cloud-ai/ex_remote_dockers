@@ -1,4 +1,4 @@
-defmodule RemoteDockers.HostConfig do
+defmodule RemoteDockers.NodeConfig do
   @enforce_keys [:hostname, :port]
   defstruct [:hostname, :port, :ssl, :label]
 
@@ -15,8 +15,8 @@ defmodule RemoteDockers.HostConfig do
 
   ## Example:
     ```elixir
-    iex> HostConfig.new()
-    %HostConfig{hostname: "localhost", port: 2376}
+    iex> NodeConfig.new()
+    %NodeConfig{hostname: "localhost", port: 2376}
     ```
   """
   def new() do
@@ -33,8 +33,8 @@ defmodule RemoteDockers.HostConfig do
 
   ## Example:
     ```elixir
-    iex> HostConfig.new("192.168.99.100")
-    %HostConfig{hostname: "192.168.99.100", port: 2376}
+    iex> NodeConfig.new("192.168.99.100")
+    %NodeConfig{hostname: "192.168.99.100", port: 2376}
     ```
   """
   def new(hostname) do
@@ -46,12 +46,12 @@ defmodule RemoteDockers.HostConfig do
 
   ## Example:
     ```elixir
-    iex> HostConfig.new("192.168.99.100", 2345)
-    %HostConfig{hostname: "192.168.99.100", port: 2345}
+    iex> NodeConfig.new("192.168.99.100", 2345)
+    %NodeConfig{hostname: "192.168.99.100", port: 2345}
     ```
   """
   def new(hostname, port) do
-    %RemoteDockers.HostConfig{
+    %RemoteDockers.NodeConfig{
       hostname: hostname,
       port: port
     }
@@ -68,8 +68,8 @@ defmodule RemoteDockers.HostConfig do
 
   ## Example:
     ```elixir
-    iex> HostConfig.new("192.168.99.100", "cert.pem", "key.pem")
-    %HostConfig{
+    iex> NodeConfig.new("192.168.99.100", "cert.pem", "key.pem")
+    %NodeConfig{
       hostname: "192.168.99.100",
       port: 2376,
       ssl: [
@@ -89,8 +89,8 @@ defmodule RemoteDockers.HostConfig do
 
   ## Example:
     ```elixir
-    iex> HostConfig.new("192.168.99.100", 2345, "cert.pem", "key.pem")
-    %HostConfig{
+    iex> NodeConfig.new("192.168.99.100", 2345, "cert.pem", "key.pem")
+    %NodeConfig{
       hostname: "192.168.99.100",
       port: 2345,
       ssl: [
@@ -102,7 +102,7 @@ defmodule RemoteDockers.HostConfig do
   """
   def new(hostname, port, nil, nil), do: new(hostname, port)
   def new(hostname, port, certfile, keyfile) do
-    %RemoteDockers.HostConfig{
+    %RemoteDockers.NodeConfig{
       hostname: hostname,
       port: port,
       ssl: [
@@ -116,25 +116,25 @@ defmodule RemoteDockers.HostConfig do
   Set label for this configuration
   ## Example:
     ```elixir
-    iex> HostConfig.new() |> HostConfig.set_label("My Local Node")
-    %HostConfig{
+    iex> NodeConfig.new() |> NodeConfig.set_label("My Local Node")
+    %NodeConfig{
       hostname: "localhost",
       port: 2376,
       label: "My Local Node"
     }
     ```
   """
-  def set_label(%RemoteDockers.HostConfig{} = host_config, label) do
-    Map.put(host_config, :label, label)
+  def set_label(%RemoteDockers.NodeConfig{} = node_config, label) do
+    Map.put(node_config, :label, label)
   end
 
   @doc """
   Get HTTPoison default options with ssl if enabled
   """
-  def get_options(%RemoteDockers.HostConfig{ssl: nil} = _host_config), do: []
-  def get_options(host_config) do
+  def get_options(%RemoteDockers.NodeConfig{ssl: nil} = _node_config), do: []
+  def get_options(node_config) do
     [
-      ssl: host_config.ssl
+      ssl: node_config.ssl
     ]
   end
 end

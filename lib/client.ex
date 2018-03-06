@@ -32,8 +32,8 @@ defmodule RemoteDockers.Client do
   def build_endpoint(endpoint, "/" <> _action = action), do: endpoint <> action
   def build_endpoint(endpoint, action), do: endpoint <> "/" <> action
 
-  def build_uri(endpoint, host_config) do
-    host_config.hostname <> ":" <> force_string(host_config.port) <> endpoint
+  def build_uri(endpoint, node_config) do
+    node_config.hostname <> ":" <> force_string(node_config.port) <> endpoint
   end
 
   def force_string(value) when is_integer(value), do: Integer.to_string(value)
