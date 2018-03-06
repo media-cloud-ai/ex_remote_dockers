@@ -1,6 +1,6 @@
 defmodule RemoteDockers.HostConfig do
   @enforce_keys [:hostname, :port]
-  defstruct [:hostname, :port, :ssl]
+  defstruct [:hostname, :port, :ssl, :label]
 
   @default_port 2376
 
@@ -110,6 +110,22 @@ defmodule RemoteDockers.HostConfig do
         keyfile: keyfile,
       ]
     }
+  end
+
+  @doc """
+  Set label for this configuration
+  ## Example:
+    ```elixir
+    iex> HostConfig.new() |> HostConfig.set_label("My Local Node")
+    %HostConfig{
+      hostname: "localhost",
+      port: 2376,
+      label: "My Local Node"
+    }
+    ```
+  """
+  def set_label(%RemoteDockers.HostConfig{} = host_config, label) do
+    Map.put(host_config, :label, label)
   end
 
   @doc """
