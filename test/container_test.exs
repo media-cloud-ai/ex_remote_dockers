@@ -2,12 +2,12 @@ defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
   alias RemoteDockers.{
       Container,
-      DockerHostConfig,
+      NodeConfig,
       ContainerConfig
     }
   doctest RemoteDockers.Container
 
-  @host_config DockerHostConfig.new(
+  @node_config NodeConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),
@@ -15,21 +15,21 @@ defmodule RemoteDockers.ContainerTest do
   )
 
   test "list containers" do
-    containers = Container.list!(@host_config)
+    containers = Container.list!(@node_config)
     assert is_list(containers)
   end
 
   test "fail listing containers" do
-    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list!("host_config") end)
+    assert_raise(ArgumentError, "Invalid NodeConfig type", fn -> Container.list!("node_config") end)
   end
 
   test "list all containers" do
-    containers = Container.list_all!(@host_config)
+    containers = Container.list_all!(@node_config)
     assert is_list(containers)
   end
 
   test "fail listing all containers" do
-    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list_all!("host_config") end)
+    assert_raise(ArgumentError, "Invalid NodeConfig type", fn -> Container.list_all!("node_config") end)
   end
 
   defp inspect_status(container, expected_status) do
@@ -39,7 +39,7 @@ defmodule RemoteDockers.ContainerTest do
 
   test "create & remove container" do
     # Create
-    container = Container.create!(@host_config, "new_container", "rabbitmq:management")
+    container = Container.create!(@node_config, "new_container", "rabbitmq:management")
     inspect_status(container, "created")
 
     # Delete
@@ -55,7 +55,7 @@ defmodule RemoteDockers.ContainerTest do
       ContainerConfig.new("rabbitmq:management")
       |> ContainerConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
       |> ContainerConfig.add_mount_point("/tmp", "/opt/rabbitmq")
-    container = Container.create!(@host_config, "new_container", container_config)
+    container = Container.create!(@node_config, "new_container", container_config)
     inspect_status(container, "created")
 
     # Delete
@@ -67,7 +67,7 @@ defmodule RemoteDockers.ContainerTest do
 
   test "create, start, stop & remove container" do
     # Create
-    container = Container.create!(@host_config, "new_container", ContainerConfig.new("rabbitmq:management"))
+    container = Container.create!(@node_config, "new_container", ContainerConfig.new("rabbitmq:management"))
     inspect_status(container, "created")
 
     # Start
