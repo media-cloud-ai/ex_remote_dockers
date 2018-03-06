@@ -1,4 +1,4 @@
-defmodule RemoteDockers.DockerHostConfig do
+defmodule RemoteDockers.HostConfig do
   @enforce_keys [:hostname, :port]
   defstruct [:hostname, :port, :ssl]
 
@@ -15,8 +15,8 @@ defmodule RemoteDockers.DockerHostConfig do
 
   ## Example:
     ```elixir
-    iex> DockerHostConfig.new()
-    %DockerHostConfig{hostname: "localhost", port: 2376}
+    iex> HostConfig.new()
+    %HostConfig{hostname: "localhost", port: 2376}
     ```
   """
   def new() do
@@ -33,8 +33,8 @@ defmodule RemoteDockers.DockerHostConfig do
 
   ## Example:
     ```elixir
-    iex> DockerHostConfig.new("192.168.99.100")
-    %DockerHostConfig{hostname: "192.168.99.100", port: 2376}
+    iex> HostConfig.new("192.168.99.100")
+    %HostConfig{hostname: "192.168.99.100", port: 2376}
     ```
   """
   def new(hostname) do
@@ -46,12 +46,12 @@ defmodule RemoteDockers.DockerHostConfig do
 
   ## Example:
     ```elixir
-    iex> DockerHostConfig.new("192.168.99.100", 2345)
-    %DockerHostConfig{hostname: "192.168.99.100", port: 2345}
+    iex> HostConfig.new("192.168.99.100", 2345)
+    %HostConfig{hostname: "192.168.99.100", port: 2345}
     ```
   """
   def new(hostname, port) do
-    %RemoteDockers.DockerHostConfig{
+    %RemoteDockers.HostConfig{
       hostname: hostname,
       port: port
     }
@@ -68,8 +68,8 @@ defmodule RemoteDockers.DockerHostConfig do
 
   ## Example:
     ```elixir
-    iex> DockerHostConfig.new("192.168.99.100", "cert.pem", "key.pem")
-    %DockerHostConfig{
+    iex> HostConfig.new("192.168.99.100", "cert.pem", "key.pem")
+    %HostConfig{
       hostname: "192.168.99.100",
       port: 2376,
       ssl: [
@@ -89,8 +89,8 @@ defmodule RemoteDockers.DockerHostConfig do
 
   ## Example:
     ```elixir
-    iex> DockerHostConfig.new("192.168.99.100", 2345, "cert.pem", "key.pem")
-    %DockerHostConfig{
+    iex> HostConfig.new("192.168.99.100", 2345, "cert.pem", "key.pem")
+    %HostConfig{
       hostname: "192.168.99.100",
       port: 2345,
       ssl: [
@@ -102,7 +102,7 @@ defmodule RemoteDockers.DockerHostConfig do
   """
   def new(hostname, port, nil, nil), do: new(hostname, port)
   def new(hostname, port, certfile, keyfile) do
-    %RemoteDockers.DockerHostConfig{
+    %RemoteDockers.HostConfig{
       hostname: hostname,
       port: port,
       ssl: [
@@ -115,7 +115,7 @@ defmodule RemoteDockers.DockerHostConfig do
   @doc """
   Get HTTPoison default options with ssl if enabled
   """
-  def get_options(%RemoteDockers.DockerHostConfig{ssl: nil} = _host_config), do: []
+  def get_options(%RemoteDockers.HostConfig{ssl: nil} = _host_config), do: []
   def get_options(host_config) do
     [
       ssl: host_config.ssl

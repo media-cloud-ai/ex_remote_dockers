@@ -2,12 +2,12 @@ defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
   alias RemoteDockers.{
       Container,
-      DockerHostConfig,
+      HostConfig,
       ContainerConfig
     }
   doctest RemoteDockers.Container
 
-  @host_config DockerHostConfig.new(
+  @host_config HostConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),
@@ -20,7 +20,7 @@ defmodule RemoteDockers.ContainerTest do
   end
 
   test "fail listing containers" do
-    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list!("host_config") end)
+    assert_raise(ArgumentError, "Invalid HostConfig type", fn -> Container.list!("host_config") end)
   end
 
   test "list all containers" do
@@ -29,7 +29,7 @@ defmodule RemoteDockers.ContainerTest do
   end
 
   test "fail listing all containers" do
-    assert_raise(ArgumentError, "Invalid host config type", fn -> Container.list_all!("host_config") end)
+    assert_raise(ArgumentError, "Invalid HostConfig type", fn -> Container.list_all!("host_config") end)
   end
 
   defp inspect_status(container, expected_status) do
