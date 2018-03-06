@@ -71,29 +71,6 @@ defmodule RemoteDockers.Container do
   def list_all!(_), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
-  Build a new Container object.
-
-  ## Example:
-    ```elixir
-    iex> Container.new(DockerHostConfig.new("localhost", 2345), "my_container_id")
-    %Container{
-      docker_host_config: %DockerHostConfig{
-        hostname: "localhost",
-        port: 2345
-      },
-      id: "my_container_id"
-    }
-    ```
-  """
-  @spec new(DockerHostConfig.t, bitstring) :: RemoteDockers.Container
-  def new(%DockerHostConfig{} = docker_host_config, container_id) do
-    %RemoteDockers.Container{
-      docker_host_config: docker_host_config,
-      id: container_id
-    }
-  end
-
-  @doc """
   Create a container from the specified container's image configuration, or a simple image name.
 
   ## Examples:
@@ -145,7 +122,7 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       204 -> :ok
-      _ -> raise "unable to delete container"
+      _ -> raise "unable to delete container: " <> container.id
     end
   end
   def remove!(_), do: raise ArgumentError.exception("Invalid container type")
@@ -162,7 +139,7 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       204 -> container
-      _ -> raise "unable to start container"
+      _ -> raise "unable to start container: " <> container.id
     end
   end
   def start!(_), do: raise ArgumentError.exception("Invalid container type")
@@ -179,7 +156,7 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       204 -> container
-      _ -> raise "unable to stop container"
+      _ -> raise "unable to stop container: " <> container.id
     end
   end
   def stop!(_), do: raise ArgumentError.exception("Invalid container type")
@@ -196,7 +173,7 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       200 -> response.body["State"]["Status"]
-      _ -> raise "unable to retrieve container"
+      _ -> raise "unable to retrieve container: " <> container.id
     end
   end
   def get_status!(_), do: raise ArgumentError.exception("Invalid container type")
