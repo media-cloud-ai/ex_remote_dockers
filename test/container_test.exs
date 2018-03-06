@@ -1,9 +1,13 @@
 defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
-  alias RemoteDockers.{Container, HostConfig}
+  alias RemoteDockers.{
+      Container,
+      DockerHostConfig,
+      ContainerConfig
+    }
   doctest RemoteDockers.Container
 
-  @host_config HostConfig.build(
+  @host_config DockerHostConfig.new(
     Application.get_env(:remote_dockers, :hostname),
     Application.get_env(:remote_dockers, :port),
     Application.get_env(:remote_dockers, :certfile),
@@ -36,6 +40,34 @@ defmodule RemoteDockers.ContainerTest do
   test "create & remove container" do
     # Create
     container = Container.create!(@host_config, "new_container", "rabbitmq:management")
+    inspect_status(container, "created")
+
+    # Delete
+    response = Container.remove!(container)
+    assert response == :ok
+
+    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+  end
+
+  test "create & remove container with configuration" do
+    # Create
+    container_config =
+      ContainerConfig.new("rabbitmq:management")
+      |> ContainerConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
+      |> ContainerConfig.add_mount_point("/tmp", "/opt/rabbitmq")
+    container = Container.create!(@host_config, "new_container", container_config)
+    inspect_status(container, "created")
+
+    # Delete
+    response = Container.remove!(container)
+    assert response == :ok
+
+    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+  end
+
+  test "create, start, stop & remove container" do
+    # Create
+    container = Container.create!(@host_config, "new_container", ContainerConfig.new("rabbitmq:management"))
     inspect_status(container, "created")
 
     # Start
