@@ -46,7 +46,7 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
   end
 
   test "create & remove container with configuration" do
@@ -62,7 +62,7 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
   end
 
   test "create, start, stop & remove container" do
@@ -84,7 +84,7 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container", fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
   end
 
 end
