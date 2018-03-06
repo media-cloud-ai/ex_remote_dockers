@@ -53,7 +53,7 @@ defmodule RemoteDockers.Container do
   def list_all!(%DockerHostConfig{} = docker_host_config) do
     options =
       DockerHostConfig.get_options(docker_host_config)
-      |> Keyword.put(:query, %{"all" => true})
+      |> Keyword.put(:params, %{"all" => true})
 
     response =
       Client.build_endpoint(@containers_uri)
@@ -131,7 +131,6 @@ defmodule RemoteDockers.Container do
   def create!(%DockerHostConfig{} = docker_host_config, name, image_name) do
     create!(docker_host_config, name, ContainerConfig.new(image_name))
   end
-
   def create!(_, _, _), do: raise ArgumentError.exception("Invalid host config type")
 
   @doc """
