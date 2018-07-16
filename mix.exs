@@ -48,7 +48,7 @@ defmodule RemoteDockers.MixProject do
   defp package() do
     [
       name: "remote_dockers",
-      files: ["lib", "mix.exs", "README*", "LICENSE*"],
+      files: ["lib", "mix.exs", "README*", "LICENSE*", "VERSION"],
       maintainers: [
         "Valentin Noël",
         "Marc-Antoine Arnaud"
