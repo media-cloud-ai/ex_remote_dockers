@@ -15,8 +15,8 @@ defmodule RemoteDockers.NodeTest do
                  Application.get_env(:remote_dockers, :keyfile)
                )
 
-  test "get version" do
-    containers = Node.version!(@node_config)
-    assert false
+  test "get info" do
+    info = Node.info!(@node_config)
+    assert is_map(info)
   end
 end

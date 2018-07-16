@@ -9,6 +9,7 @@ defmodule RemoteDockers.ContainerTest do
 
   doctest RemoteDockers.Container
 
+  @rmq_image "rabbitmq:3.6-management"
   @node_config NodeConfig.new(
                  Application.get_env(:remote_dockers, :hostname),
                  Application.get_env(:remote_dockers, :port),
@@ -45,7 +46,7 @@ defmodule RemoteDockers.ContainerTest do
 
   test "create & remove container" do
     # Create
-    container = Container.create!(@node_config, "new_container", "rabbitmq:management")
+    container = Container.create!(@node_config, "new_container", @rmq_image)
     inspect_status(container, "created")
 
     # Delete
@@ -60,7 +61,7 @@ defmodule RemoteDockers.ContainerTest do
   test "create & remove container with configuration" do
     # Create
     container_config =
-      ContainerConfig.new("rabbitmq:management")
+      ContainerConfig.new(@rmq_image)
       |> ContainerConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
       |> ContainerConfig.add_mount_point("/tmp", "/opt/rabbitmq")
 
@@ -79,7 +80,7 @@ defmodule RemoteDockers.ContainerTest do
   test "create, start, stop & remove container" do
     # Create
     container =
-      Container.create!(@node_config, "new_container", ContainerConfig.new("rabbitmq:management"))
+      Container.create!(@node_config, "new_container", ContainerConfig.new(@rmq_image))
 
     inspect_status(container, "created")
 
