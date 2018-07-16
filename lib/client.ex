@@ -1,5 +1,6 @@
 defmodule RemoteDockers.Client do
   use HTTPoison.Base
+
   @moduledoc """
   Documentation for `ExRemoteDockers.Client`
   """
@@ -16,15 +17,16 @@ defmodule RemoteDockers.Client do
   end
 
   def process_response_body(""), do: nil
+
   def process_response_body(body) do
     try do
       body
-      |> Poison.decode!
+      |> Poison.decode!()
     rescue
       _ ->
         body
         |> String.split("\n", trim: true)
-        |> Enum.map(fn (line) -> Poison.decode!(line) end)
+        |> Enum.map(fn line -> Poison.decode!(line) end)
     end
   end
 

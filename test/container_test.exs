@@ -1,18 +1,20 @@
 defmodule RemoteDockers.ContainerTest do
   use ExUnit.Case
+
   alias RemoteDockers.{
-      Container,
-      NodeConfig,
-      ContainerConfig
-    }
+    Container,
+    NodeConfig,
+    ContainerConfig
+  }
+
   doctest RemoteDockers.Container
 
   @node_config NodeConfig.new(
-    Application.get_env(:remote_dockers, :hostname),
-    Application.get_env(:remote_dockers, :port),
-    Application.get_env(:remote_dockers, :certfile),
-    Application.get_env(:remote_dockers, :keyfile)
-  )
+                 Application.get_env(:remote_dockers, :hostname),
+                 Application.get_env(:remote_dockers, :port),
+                 Application.get_env(:remote_dockers, :certfile),
+                 Application.get_env(:remote_dockers, :keyfile)
+               )
 
   test "list containers" do
     containers = Container.list!(@node_config)
@@ -20,7 +22,9 @@ defmodule RemoteDockers.ContainerTest do
   end
 
   test "fail listing containers" do
-    assert_raise(ArgumentError, "Invalid NodeConfig type", fn -> Container.list!("node_config") end)
+    assert_raise(ArgumentError, "Invalid NodeConfig type", fn ->
+      Container.list!("node_config")
+    end)
   end
 
   test "list all containers" do
@@ -29,7 +33,9 @@ defmodule RemoteDockers.ContainerTest do
   end
 
   test "fail listing all containers" do
-    assert_raise(ArgumentError, "Invalid NodeConfig type", fn -> Container.list_all!("node_config") end)
+    assert_raise(ArgumentError, "Invalid NodeConfig type", fn ->
+      Container.list_all!("node_config")
+    end)
   end
 
   defp inspect_status(container, expected_status) do
@@ -46,7 +52,9 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn ->
+      Container.get_status!(container)
+    end)
   end
 
   test "create & remove container with configuration" do
@@ -55,6 +63,7 @@ defmodule RemoteDockers.ContainerTest do
       ContainerConfig.new("rabbitmq:management")
       |> ContainerConfig.add_env("RABBITMQ_DEFAULT_VHOST", "/")
       |> ContainerConfig.add_mount_point("/tmp", "/opt/rabbitmq")
+
     container = Container.create!(@node_config, "new_container", container_config)
     inspect_status(container, "created")
 
@@ -62,12 +71,16 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn ->
+      Container.get_status!(container)
+    end)
   end
 
   test "create, start, stop & remove container" do
     # Create
-    container = Container.create!(@node_config, "new_container", ContainerConfig.new("rabbitmq:management"))
+    container =
+      Container.create!(@node_config, "new_container", ContainerConfig.new("rabbitmq:management"))
+
     inspect_status(container, "created")
 
     # Start
@@ -84,7 +97,8 @@ defmodule RemoteDockers.ContainerTest do
     response = Container.remove!(container)
     assert response == :ok
 
-    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn -> Container.get_status!(container) end)
+    assert_raise(RuntimeError, "unable to retrieve container: " <> container.id, fn ->
+      Container.get_status!(container)
+    end)
   end
-
 end

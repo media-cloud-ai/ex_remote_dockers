@@ -1,5 +1,6 @@
 defmodule RemoteDockers.Image do
   alias RemoteDockers.{Client, NodeConfig}
+
   @moduledoc """
   Connector to manage images
   """
@@ -23,7 +24,7 @@ defmodule RemoteDockers.Image do
   @doc """
   Returns a list of images
   """
-  @spec list!(NodeConfig.t) :: list(RemoteDockers.Image)
+  @spec list!(NodeConfig.t()) :: list(RemoteDockers.Image)
   def list!(%NodeConfig{} = node_config) do
     response =
       Client.build_endpoint(@images_uri)
@@ -32,18 +33,21 @@ defmodule RemoteDockers.Image do
 
     case response.status_code do
       200 ->
-        Enum.map(response.body, fn(image) ->
+        Enum.map(response.body, fn image ->
           to_image(image, node_config)
         end)
-      _ -> raise "unable to list images"
+
+      _ ->
+        raise "unable to list images"
     end
   end
-  def list!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
+
+  def list!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   @doc """
   List all images (with children)
   """
-  @spec list_all!(NodeConfig.t) :: list(RemoteDockers.Image)
+  @spec list_all!(NodeConfig.t()) :: list(RemoteDockers.Image)
   def list_all!(%NodeConfig{} = node_config) do
     options =
       NodeConfig.get_options(node_config)
@@ -56,13 +60,16 @@ defmodule RemoteDockers.Image do
 
     case response.status_code do
       200 ->
-        Enum.map(response.body, fn(image) ->
+        Enum.map(response.body, fn image ->
           to_image(image, node_config)
         end)
-      _ -> raise "unable to list all images"
+
+      _ ->
+        raise "unable to list all images"
     end
   end
-  def list_all!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
+
+  def list_all!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   @doc """
   Pull a Docker image from a repository.
@@ -73,10 +80,9 @@ defmodule RemoteDockers.Image do
   the `hello-world` image.
 
   """
-  @spec pull!(NodeConfig.t, bitstring) :: list(Map.t)
+  @spec pull!(NodeConfig.t(), bitstring) :: list(Map.t())
   def pull!(%NodeConfig{} = node_config, name) do
-    options =
-      NodeConfig.get_options(node_config)
+    options = NodeConfig.get_options(node_config)
 
     response =
       Client.build_endpoint(@images_uri, "/create?fromImage=" <> name)
@@ -88,8 +94,8 @@ defmodule RemoteDockers.Image do
       _ -> raise "unable to pull image with name: " <> name
     end
   end
-  def pull!(_, _), do: raise ArgumentError.exception("Invalid NodeConfig type")
 
+  def pull!(_, _), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   defp to_image(%{} = image, %NodeConfig{} = node_config) do
     %RemoteDockers.Image{
@@ -109,6 +115,7 @@ defmodule RemoteDockers.Image do
 
   defp format_status(steps, prev_id \\ nil, result \\ [])
   defp format_status([], _prev_id, result), do: result
+
   defp format_status([step | steps], prev_id, result) do
     {step, id} =
       case Map.get(step, "id", nil) do
@@ -118,11 +125,14 @@ defmodule RemoteDockers.Image do
               nil -> Map.put(step, "id", prev_id)
               _ -> step
             end
+
           {step, prev_id}
-        id -> {step, id}
+
+        id ->
+          {step, id}
       end
+
     result = List.insert_at(result, -1, step)
     format_status(steps, id, result)
   end
-
 end

@@ -26,10 +26,9 @@ defmodule RemoteDockers.MountPoint do
   """
   def new(source, target, type \\ "bind") do
     %RemoteDockers.MountPoint{
-      "Source": source,
-      "Target": target,
-      "Type": type
+      Source: source,
+      Target: target,
+      Type: type
     }
   end
-
 end

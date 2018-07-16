@@ -19,9 +19,9 @@ defmodule RemoteDockers.ContainerConfig do
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
-      "Image": image_name,
-      "Env": [],
-      "HostConfig": %{}
+      Image: image_name,
+      Env: [],
+      HostConfig: %{}
     }
   end
 
@@ -39,11 +39,13 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec add_env(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
+  @spec add_env(RemoteDockers.ContainerConfig, bitstring, bitstring) ::
+          RemoteDockers.ContainerConfig
   def add_env(%RemoteDockers.ContainerConfig{} = container_config, key, value) do
     env =
       Map.get(container_config, :Env)
       |> List.insert_at(-1, key <> "=" <> value)
+
     container_config
     |> Map.put(:Env, env)
   end
@@ -62,8 +64,12 @@ defmodule RemoteDockers.ContainerConfig do
     |> ContainerConfig.add(mount_point)
     ```
   """
-  @spec add_mount_point(RemoteDockers.ContainerConfig, MountPoint) :: RemoteDockers.ContainerConfig
-  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, %MountPoint{} = mount_point) do
+  @spec add_mount_point(RemoteDockers.ContainerConfig, MountPoint) ::
+          RemoteDockers.ContainerConfig
+  def add_mount_point(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        %MountPoint{} = mount_point
+      ) do
     host_config = Map.get(container_config, :HostConfig, %{})
 
     mount_points =
@@ -71,6 +77,7 @@ defmodule RemoteDockers.ContainerConfig do
       |> List.insert_at(-1, mount_point)
 
     host_config = Map.put(host_config, :Mounts, mount_points)
+
     container_config
     |> Map.put(:HostConfig, host_config)
   end
@@ -108,9 +115,14 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring, bitstring) :: RemoteDockers.ContainerConfig
-  def add_mount_point(%RemoteDockers.ContainerConfig{} = container_config, source, target, type \\ "bind") do
+  @spec add_mount_point(RemoteDockers.ContainerConfig, bitstring, bitstring, bitstring) ::
+          RemoteDockers.ContainerConfig
+  def add_mount_point(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        source,
+        target,
+        type \\ "bind"
+      ) do
     add_mount_point(container_config, MountPoint.new(source, target, type))
   end
-
 end

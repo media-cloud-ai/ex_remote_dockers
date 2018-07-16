@@ -27,7 +27,7 @@ defmodule RemoteDockers.MixProject do
     [
       extra_applications: [
         :logger,
-        :httpoison,
+        :httpoison
       ]
     ]
   end

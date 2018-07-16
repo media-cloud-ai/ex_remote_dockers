@@ -1,9 +1,10 @@
 defmodule RemoteDockers.Container do
   alias RemoteDockers.{
-      Client,
-      NodeConfig,
-      ContainerConfig
-    }
+    Client,
+    NodeConfig,
+    ContainerConfig
+  }
+
   @moduledoc """
   Connector to manage containers
   """
@@ -29,7 +30,7 @@ defmodule RemoteDockers.Container do
   @doc """
   List running containers
   """
-  @spec list!(NodeConfig.t) :: list(RemoteDockers.Container)
+  @spec list!(NodeConfig.t()) :: list(RemoteDockers.Container)
   def list!(%NodeConfig{} = node_config) do
     response =
       Client.build_endpoint(@containers_uri)
@@ -38,18 +39,21 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       200 ->
-        Enum.map(response.body, fn(container) ->
+        Enum.map(response.body, fn container ->
           to_container(container, node_config)
         end)
-      _ -> raise "unable to list containers"
+
+      _ ->
+        raise "unable to list containers"
     end
   end
-  def list!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
+
+  def list!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   @doc """
   List all containers
   """
-  @spec list_all!(NodeConfig.t) :: list(RemoteDockers.Container)
+  @spec list_all!(NodeConfig.t()) :: list(RemoteDockers.Container)
   def list_all!(%NodeConfig{} = node_config) do
     options =
       NodeConfig.get_options(node_config)
@@ -62,13 +66,16 @@ defmodule RemoteDockers.Container do
 
     case response.status_code do
       200 ->
-        Enum.map(response.body, fn(container) ->
+        Enum.map(response.body, fn container ->
           to_container(container, node_config)
         end)
-      _ -> raise "unable to list all containers"
+
+      _ ->
+        raise "unable to list all containers"
     end
   end
-  def list_all!(_), do: raise ArgumentError.exception("Invalid NodeConfig type")
+
+  def list_all!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   @doc """
   Create a container from the specified container's image configuration, or a simple image name.
@@ -85,15 +92,14 @@ defmodule RemoteDockers.Container do
   Container.create!(NodeConfig.new(), "my_container", "MyImage")
   ```
   """
-  @spec create!(NodeConfig.t, bitstring, ContainerConfig.t) :: RemoteDockers.Container
+  @spec create!(NodeConfig.t(), bitstring, ContainerConfig.t()) :: RemoteDockers.Container
   def create!(%NodeConfig{} = node_config, name, %ContainerConfig{} = container_config) do
-    options =
-      NodeConfig.get_options(node_config)
+    options = NodeConfig.get_options(node_config)
 
     response =
       Client.build_endpoint(@containers_uri, "create?name=" <> name)
       |> Client.build_uri(node_config)
-      |> Client.post!(container_config |> Poison.encode!, [], options)
+      |> Client.post!(container_config |> Poison.encode!(), [], options)
 
     case response.status_code do
       201 ->
@@ -101,14 +107,18 @@ defmodule RemoteDockers.Container do
           id: response.body["Id"],
           node_config: node_config
         }
-      _ -> raise "unable to create image: " <> response.body["message"]
+
+      _ ->
+        raise "unable to create image: " <> response.body["message"]
     end
   end
-  @spec create!(NodeConfig.t, bitstring, bitstring) :: RemoteDockers.Container
+
+  @spec create!(NodeConfig.t(), bitstring, bitstring) :: RemoteDockers.Container
   def create!(%NodeConfig{} = node_config, name, image_name) do
     create!(node_config, name, ContainerConfig.new(image_name))
   end
-  def create!(_, _, _), do: raise ArgumentError.exception("Invalid NodeConfig type")
+
+  def create!(_, _, _), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
   @doc """
   Remove a container
@@ -125,7 +135,8 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to delete container: " <> container.id
     end
   end
-  def remove!(_), do: raise ArgumentError.exception("Invalid container type")
+
+  def remove!(_), do: raise(ArgumentError.exception("Invalid container type"))
 
   @doc """
   Start a container
@@ -142,7 +153,8 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to start container: " <> container.id
     end
   end
-  def start!(_), do: raise ArgumentError.exception("Invalid container type")
+
+  def start!(_), do: raise(ArgumentError.exception("Invalid container type"))
 
   @doc """
   Stop a container
@@ -159,7 +171,8 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to stop container: " <> container.id
     end
   end
-  def stop!(_), do: raise ArgumentError.exception("Invalid container type")
+
+  def stop!(_), do: raise(ArgumentError.exception("Invalid container type"))
 
   @doc """
   Get status of a container
@@ -176,7 +189,8 @@ defmodule RemoteDockers.Container do
       _ -> raise "unable to retrieve container: " <> container.id
     end
   end
-  def get_status!(_), do: raise ArgumentError.exception("Invalid container type")
+
+  def get_status!(_), do: raise(ArgumentError.exception("Invalid container type"))
 
   defp to_container(%{} = container, %NodeConfig{} = node_config) do
     %RemoteDockers.Container{

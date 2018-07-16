@@ -57,7 +57,6 @@ defmodule RemoteDockers.NodeConfig do
     }
   end
 
-
   @doc """
   Build configuration with SSL
 
@@ -80,6 +79,7 @@ defmodule RemoteDockers.NodeConfig do
     ```
   """
   def new(hostname, nil, nil), do: new(hostname)
+
   def new(hostname, certfile, keyfile) do
     new(hostname, @default_port, certfile, keyfile)
   end
@@ -101,13 +101,14 @@ defmodule RemoteDockers.NodeConfig do
     ```
   """
   def new(hostname, port, nil, nil), do: new(hostname, port)
+
   def new(hostname, port, certfile, keyfile) do
     %RemoteDockers.NodeConfig{
       hostname: hostname,
       port: port,
       ssl: [
         certfile: certfile,
-        keyfile: keyfile,
+        keyfile: keyfile
       ]
     }
   end
@@ -132,6 +133,7 @@ defmodule RemoteDockers.NodeConfig do
   Get HTTPoison default options with ssl if enabled
   """
   def get_options(%RemoteDockers.NodeConfig{ssl: nil} = _node_config), do: []
+
   def get_options(node_config) do
     [
       ssl: node_config.ssl
