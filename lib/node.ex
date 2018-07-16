@@ -1,5 +1,4 @@
 defmodule RemoteDockers.Node do
-
   alias RemoteDockers.Client
   alias RemoteDockers.NodeConfig
 
@@ -18,6 +17,7 @@ defmodule RemoteDockers.Node do
     case response.status_code do
       200 ->
         response.body
+
       _ ->
         raise "unable to get version of this node"
     end

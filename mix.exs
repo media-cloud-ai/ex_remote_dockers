@@ -78,9 +78,13 @@ defmodule RemoteDockers.MixProject do
 
   defp retrieve_version_from_git do
     require Logger
-    Logger.warn "Calling out to `git describe` for the version number. This is slow! You should think about a hook to set the VERSION file"
+
+    Logger.warn(
+      "Calling out to `git describe` for the version number. This is slow! You should think about a hook to set the VERSION file"
+    )
+
     System.cmd("git", ~w{describe --always --tags --first-parent})
     |> elem(0)
-    |> String.trim
+    |> String.trim()
   end
 end
