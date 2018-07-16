@@ -7,7 +7,7 @@ defmodule RemoteDockers.Node do
   @doc """
   Get Node version
   """
-  @spec version!(NodeConfig.t()) :: string
+  @spec version!(NodeConfig.t()) :: map()
   def version!(%NodeConfig{} = node_config) do
     response =
       @info_uri
