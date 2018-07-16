@@ -4,7 +4,7 @@ defmodule RemoteDockers.MixProject do
   def project do
     [
       app: :remote_dockers,
-      version: "1.3.0",
+      version: get_version(),
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -56,5 +56,31 @@ defmodule RemoteDockers.MixProject do
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/FTV-Subtil/ex_remote_dockers"}
     ]
+  end
+
+  defp get_version do
+    version_from_file()
+    |> handle_file_version()
+    |> String.replace_leading("v", "")
+  end
+
+  defp version_from_file(file \\ "VERSION") do
+    File.read(file)
+  end
+
+  defp handle_file_version({:ok, content}) do
+    content
+  end
+
+  defp handle_file_version({:error, _}) do
+    retrieve_version_from_git()
+  end
+
+  defp retrieve_version_from_git do
+    require Logger
+    Logger.warn "Calling out to `git describe` for the version number. This is slow! You should think about a hook to set the VERSION file"
+    System.cmd("git", ~w{describe --always --tags --first-parent})
+    |> elem(0)
+    |> String.trim
   end
 end
