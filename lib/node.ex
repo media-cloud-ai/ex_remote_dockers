@@ -2,13 +2,13 @@ defmodule RemoteDockers.Node do
   alias RemoteDockers.Client
   alias RemoteDockers.NodeConfig
 
-  @info_uri "/v1.30/info"
+  @info_uri "/v1.35/info"
 
   @doc """
-  Get Node version
+  Get Node info
   """
-  @spec version!(NodeConfig.t()) :: map()
-  def version!(%NodeConfig{} = node_config) do
+  @spec info!(NodeConfig.t()) :: map()
+  def info!(%NodeConfig{} = node_config) do
     response =
       @info_uri
       |> Client.build_uri(node_config)
@@ -19,9 +19,9 @@ defmodule RemoteDockers.Node do
         response.body
 
       _ ->
-        raise "unable to get version of this node"
+        raise "unable to get info of this node"
     end
   end
 
-  def version!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
+  def info!(_), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 end
