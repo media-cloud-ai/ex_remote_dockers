@@ -8,6 +8,8 @@ defmodule RemoteDockers do
 
   ### Supported endpoints
 
+  - `RemoteDockers.Node`
+    manage docker node (info)
   - `RemoteDockers.Image`
     manage docker image (list, pull, build, delete)
   - `RemoteDockers.Container`
