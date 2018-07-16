@@ -3,9 +3,19 @@ language: elixir
 
 elixir:
   - 1.6.0
+  - 1.6.6
 otp_release:
   - 19.3
   - 20.2
+  - 21.0
+
+matrix:
+  exclude:
+    - elixir: 1.6.0
+      otp_release: 21.0
+
+env:
+  - MIX_ENV=test
 
 install:
   - mix local.hex --force
@@ -13,5 +23,5 @@ install:
   - mix deps.get
 
 script:
+  - if [[ $(elixir --version) = *"1.6"* ]]; then mix format --check-formatted; fi
   - mix compile
-
