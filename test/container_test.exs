@@ -79,8 +79,7 @@ defmodule RemoteDockers.ContainerTest do
 
   test "create, start, stop & remove container" do
     # Create
-    container =
-      Container.create!(@node_config, "new_container", ContainerConfig.new(@rmq_image))
+    container = Container.create!(@node_config, "new_container", ContainerConfig.new(@rmq_image))
 
     inspect_status(container, "created")
 
