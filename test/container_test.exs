@@ -9,7 +9,7 @@ defmodule RemoteDockers.ContainerTest do
 
   doctest RemoteDockers.Container
 
-  @rmq_image "rabbitmq:3.6-management"
+  @rmq_image "rabbitmq:management"
   @node_config NodeConfig.new(
                  Application.get_env(:remote_dockers, :hostname),
                  Application.get_env(:remote_dockers, :port),

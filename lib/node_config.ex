@@ -114,6 +114,39 @@ defmodule RemoteDockers.NodeConfig do
   end
 
   @doc """
+  Build configuration with hostname, port and SSL with Certificate Authority
+
+  ## Example:
+    ```elixir
+    iex> NodeConfig.new("192.168.99.100", 2345, "ca.pem", "cert.pem", "key.pem")
+    %NodeConfig{
+      hostname: "192.168.99.100",
+      port: 2345,
+      ssl: [
+        cacertfile: "ca.pem",
+        certfile: "cert.pem",
+        keyfile: "key.pem"
+      ]
+    }
+    ```
+  """
+  def new(hostname, port, nil, nil, nil), do: new(hostname, port)
+
+  def new(hostname, port, nil, certfile, keyfile), do: new(hostname, port, certfile, keyfile)
+
+  def new(hostname, port, cacertfile, certfile, keyfile) do
+    %RemoteDockers.NodeConfig{
+      hostname: hostname,
+      port: port,
+      ssl: [
+        cacertfile: cacertfile,
+        certfile: certfile,
+        keyfile: keyfile
+      ]
+    }
+  end
+
+  @doc """
   Set label for this configuration
   ## Example:
     ```elixir
