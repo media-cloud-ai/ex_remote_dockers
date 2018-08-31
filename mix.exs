@@ -35,9 +35,9 @@ defmodule RemoteDockers.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 1.0"},
-      {:poison, "~> 3.1"},
-      {:ex_doc, "~> 0.18", only: :dev, runtime: false}
+      {:httpoison, "~> 1.3"},
+      {:poison, "~> 4.0"},
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end
 
