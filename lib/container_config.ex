@@ -3,9 +3,10 @@ defmodule RemoteDockers.ContainerConfig do
 
   @enforce_keys [:Image]
   defstruct [
-    :Image,
+    :DnsOptions,
     :Env,
-    :HostConfig
+    :HostConfig,
+    :Image,
   ]
 
   @doc """
@@ -14,14 +15,20 @@ defmodule RemoteDockers.ContainerConfig do
   ## Example:
     ```elixir
     iex> ContainerConfig.new("hello-world")
-    %ContainerConfig{:Image => "hello-world", :Env => [], :HostConfig => %{}}
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :DnsOptions => [""]
+    }
     ```
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
-      Image: image_name,
+      DnsOptions: [""],
       Env: [],
-      HostConfig: %{}
+      HostConfig: %{},
+      Image: image_name,
     }
   end
 
@@ -35,7 +42,8 @@ defmodule RemoteDockers.ContainerConfig do
     %ContainerConfig{
       :Image => "hello-world",
       :Env => ["TOTO=/path/to/toto"],
-      :HostConfig => %{}
+      :HostConfig => %{},
+      :DnsOptions => [""]
     }
     ```
   """
@@ -98,6 +106,7 @@ defmodule RemoteDockers.ContainerConfig do
     %ContainerConfig{
       :Image => "image_name",
       :Env => [],
+      :DnsOptions => [""],
       :HostConfig => %{
         :Mounts => [
           %MountPoint{
@@ -124,5 +133,39 @@ defmodule RemoteDockers.ContainerConfig do
         type \\ "bind"
       ) do
     add_mount_point(container_config, MountPoint.new(source, target, type))
+  end
+
+  @doc """
+  Add a DNS option to the container configuration.
+
+  `source` and `target` values are respectively mapped to the `"Source"` and `"Target"` mount point
+  description fields.
+
+  See `add_dns_option/2`
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("image_name")
+    ...> |> ContainerConfig.add_dns_option("192.168.10.10 my_host")
+    %ContainerConfig{
+      :Image => "image_name",
+      :Env => [],
+      :DnsOptions => ["", "192.168.10.10 my_host"],
+      :HostConfig => %{}
+    }
+    ```
+  """
+  @spec add_dns_option(RemoteDockers.ContainerConfig, bitstring) ::
+          RemoteDockers.ContainerConfig
+  def add_dns_option(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        dns_option
+      ) do
+    dns_options =
+      Map.get(container_config, :DnsOptions)
+      |> List.insert_at(-1, dns_option)
+
+    container_config
+    |> Map.put(:DnsOptions, dns_options)
   end
 end
