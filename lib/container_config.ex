@@ -168,31 +168,32 @@ defmodule RemoteDockers.ContainerConfig do
   @doc """
   Add an extra Host to the container configuration.
 
-  See `add_extra_host/2`
+  See `add_extra_host/3`
 
   ## Example:
     ```elixir
     iex> ContainerConfig.new("image_name")
-    ...> |> ContainerConfig.add_extra_host("192.168.10.10 my_host")
+    ...> |> ContainerConfig.add_extra_host("192.168.10.10", "my_host")
     %ContainerConfig{
       :Image => "image_name",
       :Env => [],
       :HostConfig => %{
-        :ExtraHosts => ["192.168.10.10 my_host"],
+        :ExtraHosts => ["192.168.10.10:my_host"],
       }
     }
     ```
   """
-  @spec add_extra_host(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
+  @spec add_extra_host(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
   def add_extra_host(
         %RemoteDockers.ContainerConfig{} = container_config,
-        extra_host
+        ip,
+        hostname
       ) do
     host_config = Map.get(container_config, :HostConfig, %{})
 
     extra_hosts =
       Map.get(host_config, :ExtraHosts, [])
-      |> List.insert_at(-1, extra_host)
+      |> List.insert_at(-1, [ip <> ":" <> hostname])
 
     host_config = Map.put(host_config, :ExtraHosts, extra_hosts)
 
