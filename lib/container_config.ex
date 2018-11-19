@@ -3,7 +3,6 @@ defmodule RemoteDockers.ContainerConfig do
 
   @enforce_keys [:Image]
   defstruct [
-    :DnsOptions,
     :Env,
     :HostConfig,
     :Image
@@ -18,14 +17,12 @@ defmodule RemoteDockers.ContainerConfig do
     %ContainerConfig{
       :Image => "hello-world",
       :Env => [],
-      :HostConfig => %{},
-      :DnsOptions => [""]
+      :HostConfig => %{}
     }
     ```
   """
   def new(image_name) do
     %RemoteDockers.ContainerConfig{
-      DnsOptions: [""],
       Env: [],
       HostConfig: %{},
       Image: image_name
@@ -43,7 +40,6 @@ defmodule RemoteDockers.ContainerConfig do
       :Image => "hello-world",
       :Env => ["TOTO=/path/to/toto"],
       :HostConfig => %{},
-      :DnsOptions => [""]
     }
     ```
   """
@@ -106,7 +102,6 @@ defmodule RemoteDockers.ContainerConfig do
     %ContainerConfig{
       :Image => "image_name",
       :Env => [],
-      :DnsOptions => [""],
       :HostConfig => %{
         :Mounts => [
           %MountPoint{
@@ -138,20 +133,18 @@ defmodule RemoteDockers.ContainerConfig do
   @doc """
   Add a DNS option to the container configuration.
 
-  `source` and `target` values are respectively mapped to the `"Source"` and `"Target"` mount point
-  description fields.
-
   See `add_dns_option/2`
 
   ## Example:
     ```elixir
     iex> ContainerConfig.new("image_name")
-    ...> |> ContainerConfig.add_dns_option("192.168.10.10 my_host")
+    ...> |> ContainerConfig.add_dns_option("dns option")
     %ContainerConfig{
       :Image => "image_name",
       :Env => [],
-      :DnsOptions => ["", "192.168.10.10 my_host"],
-      :HostConfig => %{}
+      :HostConfig => %{
+        :DnsOptions => ["dns option"],
+      }
     }
     ```
   """
@@ -160,11 +153,50 @@ defmodule RemoteDockers.ContainerConfig do
         %RemoteDockers.ContainerConfig{} = container_config,
         dns_option
       ) do
+    host_config = Map.get(container_config, :HostConfig, %{})
+
     dns_options =
-      Map.get(container_config, :DnsOptions)
+      Map.get(host_config, :DnsOptions, [])
       |> List.insert_at(-1, dns_option)
 
+    host_config = Map.put(host_config, :DnsOptions, dns_options)
+
     container_config
-    |> Map.put(:DnsOptions, dns_options)
+    |> Map.put(:HostConfig, host_config)
+  end
+
+  @doc """
+  Add an extra Host to the container configuration.
+
+  See `add_extra_host/2`
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("image_name")
+    ...> |> ContainerConfig.add_extra_host("192.168.10.10 my_host")
+    %ContainerConfig{
+      :Image => "image_name",
+      :Env => [],
+      :HostConfig => %{
+        :ExtraHosts => ["192.168.10.10 my_host"],
+      }
+    }
+    ```
+  """
+  @spec add_extra_host(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
+  def add_extra_host(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        extra_host
+      ) do
+    host_config = Map.get(container_config, :HostConfig, %{})
+
+    extra_hosts =
+      Map.get(host_config, :ExtraHosts, [])
+      |> List.insert_at(-1, extra_host)
+
+    host_config = Map.put(host_config, :ExtraHosts, extra_hosts)
+
+    container_config
+    |> Map.put(:HostConfig, host_config)
   end
 end
