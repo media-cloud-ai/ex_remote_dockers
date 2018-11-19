@@ -6,7 +6,7 @@ defmodule RemoteDockers.ContainerConfig do
     :DnsOptions,
     :Env,
     :HostConfig,
-    :Image,
+    :Image
   ]
 
   @doc """
@@ -28,7 +28,7 @@ defmodule RemoteDockers.ContainerConfig do
       DnsOptions: [""],
       Env: [],
       HostConfig: %{},
-      Image: image_name,
+      Image: image_name
     }
   end
 
@@ -155,8 +155,7 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec add_dns_option(RemoteDockers.ContainerConfig, bitstring) ::
-          RemoteDockers.ContainerConfig
+  @spec add_dns_option(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
   def add_dns_option(
         %RemoteDockers.ContainerConfig{} = container_config,
         dns_option
