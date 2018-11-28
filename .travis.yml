@@ -27,5 +27,5 @@ install:
   - mix deps.get
 
 script:
-  - if [[ $(elixir --version) = *"1.6"* ]]; then mix format --check-formatted; fi
+  - if [[ $(elixir --version) = *"1.7"* ]]; then mix format --check-formatted; fi
   - mix compile
