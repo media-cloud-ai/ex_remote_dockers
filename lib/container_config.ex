@@ -183,7 +183,8 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec add_extra_host(RemoteDockers.ContainerConfig, bitstring, bitstring) :: RemoteDockers.ContainerConfig
+  @spec add_extra_host(RemoteDockers.ContainerConfig, bitstring, bitstring) ::
+          RemoteDockers.ContainerConfig
   def add_extra_host(
         %RemoteDockers.ContainerConfig{} = container_config,
         hostname,
