@@ -31,8 +31,10 @@ install:
   - mix local.hex --force
   - mix local.rebar --force
   - mix deps.get
-  - mix test
+  - docker pull rabbitmq:management
+  - docker pull hello-world:latest
 
 script:
   - if [[ $(elixir --version) = *"1.7"* ]]; then mix format --check-formatted; fi
   - mix compile
+  - mix test
