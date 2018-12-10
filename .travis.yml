@@ -1,6 +1,8 @@
 
 language: elixir
 
+sudo: required
+
 elixir:
   - 1.6.0
   - 1.6.6
@@ -12,6 +14,9 @@ otp_release:
   - 19.3
   - 20.2
   - 21.0
+
+services:
+- docker
 
 matrix:
   exclude:
@@ -25,6 +30,7 @@ install:
   - mix local.hex --force
   - mix local.rebar --force
   - mix deps.get
+  - mix test
 
 script:
   - if [[ $(elixir --version) = *"1.7"* ]]; then mix format --check-formatted; fi
