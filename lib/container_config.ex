@@ -201,4 +201,38 @@ defmodule RemoteDockers.ContainerConfig do
     container_config
     |> Map.put(:HostConfig, host_config)
   end
+
+  @doc """
+  Add parameter to the HostConfig element.
+
+  See `update_host_config/3`
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("image_name")
+    ...> |> ContainerConfig.update_host_config(:my_custom_key, :my_custom_value)
+    %ContainerConfig{
+      :Image => "image_name",
+      :Env => [],
+      :HostConfig => %{
+        :my_custom_key => :my_custom_value,
+      }
+    }
+    ```
+  """
+  @spec update_host_config(RemoteDockers.ContainerConfig, bitstring, any) ::
+          RemoteDockers.ContainerConfig
+  def update_host_config(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        key,
+        value
+      ) do
+    host_config =
+      container_config
+      |> Map.get(:HostConfig, %{})
+      |> Map.put(key, value)
+
+    container_config
+    |> Map.put(:HostConfig, host_config)
+  end
 end
