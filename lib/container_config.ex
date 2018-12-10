@@ -74,16 +74,13 @@ defmodule RemoteDockers.ContainerConfig do
         %RemoteDockers.ContainerConfig{} = container_config,
         %MountPoint{} = mount_point
       ) do
-    host_config = Map.get(container_config, :HostConfig, %{})
-
     mount_points =
-      Map.get(host_config, :Mounts, [])
+      container_config
+      |> Map.get(:HostConfig, %{})
+      |> Map.get(:Mounts, [])
       |> List.insert_at(-1, mount_point)
 
-    host_config = Map.put(host_config, :Mounts, mount_points)
-
-    container_config
-    |> Map.put(:HostConfig, host_config)
+    update_host_config(container_config, :Mounts, mount_points)
   end
 
   @doc """
@@ -153,16 +150,13 @@ defmodule RemoteDockers.ContainerConfig do
         %RemoteDockers.ContainerConfig{} = container_config,
         dns_option
       ) do
-    host_config = Map.get(container_config, :HostConfig, %{})
-
     dns_options =
-      Map.get(host_config, :DnsOptions, [])
+      container_config
+      |> Map.get(:HostConfig, %{})
+      |> Map.get(:DnsOptions, [])
       |> List.insert_at(-1, dns_option)
 
-    host_config = Map.put(host_config, :DnsOptions, dns_options)
-
-    container_config
-    |> Map.put(:HostConfig, host_config)
+    update_host_config(container_config, :DnsOptions, dns_options)
   end
 
   @doc """
@@ -190,13 +184,44 @@ defmodule RemoteDockers.ContainerConfig do
         hostname,
         ip
       ) do
-    host_config = Map.get(container_config, :HostConfig, %{})
-
     extra_hosts =
-      Map.get(host_config, :ExtraHosts, [])
+      container_config
+      |> Map.get(:HostConfig, %{})
+      |> Map.get(:ExtraHosts, [])
       |> List.insert_at(-1, hostname <> ":" <> ip)
 
-    host_config = Map.put(host_config, :ExtraHosts, extra_hosts)
+    update_host_config(container_config, :ExtraHosts, extra_hosts)
+  end
+
+  @doc """
+  Add parameter to the HostConfig element.
+
+  See `update_host_config/3`
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("image_name")
+    ...> |> ContainerConfig.update_host_config(:my_custom_key, :my_custom_value)
+    %ContainerConfig{
+      :Image => "image_name",
+      :Env => [],
+      :HostConfig => %{
+        :my_custom_key => :my_custom_value,
+      }
+    }
+    ```
+  """
+  @spec update_host_config(RemoteDockers.ContainerConfig, bitstring, any) ::
+          RemoteDockers.ContainerConfig
+  def update_host_config(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        key,
+        value
+      ) do
+    host_config =
+      container_config
+      |> Map.get(:HostConfig, %{})
+      |> Map.put(key, value)
 
     container_config
     |> Map.put(:HostConfig, host_config)
