@@ -97,6 +97,26 @@ defmodule RemoteDockers.Image do
 
   def pull!(_, _), do: raise(ArgumentError.exception("Invalid NodeConfig type"))
 
+  @doc """
+  Delete a Docker image on a Node.
+  """
+  @spec delete!(Image.t()) :: list(Map.t())
+  def delete!(%RemoteDockers.Image{} = image) do
+    options = NodeConfig.get_options(image.node_config)
+
+    response =
+      Client.build_endpoint(@images_uri, "/" <> image.id <> "?force=true")
+      |> Client.build_uri(image.node_config)
+      |> Client.delete!(options)
+
+    case response.status_code do
+      200 -> format_status(response.body)
+      _ -> raise "unable to delete image with id: " <> image.id
+    end
+  end
+
+  def delete!(_, _), do: raise(ArgumentError.exception("Invalid Image type"))
+
   defp to_image(%{} = image, %NodeConfig{} = node_config) do
     %RemoteDockers.Image{
       node_config: node_config,

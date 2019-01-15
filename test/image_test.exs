@@ -30,8 +30,16 @@ defmodule RemoteDockers.ImageTest do
     end)
   end
 
-  test "pull an image" do
-    status = Image.pull!(@node_config, "hello-world:latest")
+  test "pull and delete an image" do
+    image_name = "hello-world:latest"
+    status = Image.pull!(@node_config, image_name)
+    assert is_list(status)
+    image =
+      Image.list_all!(@node_config)
+      |> Enum.filter(fn image -> image.repo_tags == [image_name] end)
+      |> List.first
+
+    status = Image.delete!(image)
     assert is_list(status)
   end
 
