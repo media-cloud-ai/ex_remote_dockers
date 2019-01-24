@@ -34,10 +34,11 @@ defmodule RemoteDockers.ImageTest do
     image_name = "hello-world:latest"
     status = Image.pull!(@node_config, image_name)
     assert is_list(status)
+
     image =
       Image.list_all!(@node_config)
       |> Enum.filter(fn image -> image.repo_tags == [image_name] end)
-      |> List.first
+      |> List.first()
 
     status = Image.delete!(image)
     assert is_list(status)
