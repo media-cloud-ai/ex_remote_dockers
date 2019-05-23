@@ -21,12 +21,12 @@ defmodule RemoteDockers.Client do
   def process_response_body(body) do
     try do
       body
-      |> Poison.decode!()
+      |> Jason.decode!()
     rescue
       _ ->
         body
         |> String.split("\n", trim: true)
-        |> Enum.map(fn line -> Poison.decode!(line) end)
+        |> Enum.map(fn line -> Jason.decode!(line) end)
     end
   end
 

@@ -36,7 +36,7 @@ defmodule RemoteDockers.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.3"},
-      {:poison, "~> 4.0"},
+      {:jason, "~> 1.1"},
       {:ex_doc, "~> 0.19", only: :dev, runtime: false}
     ]
   end

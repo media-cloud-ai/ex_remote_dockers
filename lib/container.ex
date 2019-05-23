@@ -99,7 +99,7 @@ defmodule RemoteDockers.Container do
     response =
       Client.build_endpoint(@containers_uri, "create?name=" <> name)
       |> Client.build_uri(node_config)
-      |> Client.post!(container_config |> Poison.encode!(), [], options)
+      |> Client.post!(container_config |> Jason.encode!(), [], options)
 
     case response.status_code do
       201 ->
