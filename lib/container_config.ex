@@ -2,6 +2,7 @@ defmodule RemoteDockers.ContainerConfig do
   alias RemoteDockers.MountPoint
 
   @enforce_keys [:Image]
+  @derive Jason.Encoder
   defstruct [
     :Env,
     :HostConfig,

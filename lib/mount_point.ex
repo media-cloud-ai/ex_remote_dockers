@@ -4,6 +4,7 @@ defmodule RemoteDockers.MountPoint do
   """
 
   @enforce_keys [:Source, :Target, :Type]
+  @derive Jason.Encoder
   defstruct [
     :Source,
     :Target,
