@@ -93,11 +93,14 @@ defmodule RemoteDockers.Container do
   ```
   """
   @spec create!(NodeConfig.t(), bitstring, ContainerConfig.t()) :: RemoteDockers.Container
+  def create!(node_config, name \\ nil, container_config)
   def create!(%NodeConfig{} = node_config, name, %ContainerConfig{} = container_config) do
     options = NodeConfig.get_options(node_config)
 
+    name_param = if name == nil, do: "", else: "?name=" <> URI.encode_www_form(name)
+
     response =
-      Client.build_endpoint(@containers_uri, "create?name=" <> name)
+      Client.build_endpoint(@containers_uri, "create" <> name_param)
       |> Client.build_uri(node_config)
       |> Client.post!(container_config |> Jason.encode!(), [], options)
 
