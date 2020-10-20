@@ -2,11 +2,14 @@ defmodule RemoteDockers.ContainerConfig do
   alias RemoteDockers.MountPoint
 
   @enforce_keys [:Image]
-  @derive Jason.Encoder
   defstruct [
     :Env,
     :HostConfig,
-    :Image
+    :Image,
+    :User,
+    :WorkingDir,
+    :Entrypoint,
+    :Cmd
   ]
 
   @doc """
@@ -226,5 +229,131 @@ defmodule RemoteDockers.ContainerConfig do
 
     container_config
     |> Map.put(:HostConfig, host_config)
+  end
+
+  @doc """
+  Set the user that commands are run as.
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_user("username")
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :User => "username"
+    }
+    ```
+  """
+  @spec set_user(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
+  def set_user(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        user
+      ) do
+    container_config
+    |> Map.put(:User, user)
+  end
+
+  @doc """
+  Set the working directory that commands are run in.
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_working_dir("/app")
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :WorkingDir => "/app"
+    }
+    ```
+  """
+  @spec set_working_dir(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
+  def set_working_dir(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        working_dir
+      ) do
+    container_config
+    |> Map.put(:WorkingDir, working_dir)
+  end
+
+  @doc """
+  Set the entry point for the container.
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_entrypoint("iex -s mix")
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :Entrypoint => "iex -s mix"
+    }
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_entrypoint(["/usr/local/bin/iex", "-s", "mix"])
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :Entrypoint => ["/usr/local/bin/iex", "-s", "mix"]
+    }
+    ```
+  """
+  @spec set_entrypoint(RemoteDockers.ContainerConfig, bitstring | list(bitstring)) ::
+          RemoteDockers.ContainerConfig
+  def set_entrypoint(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        entrypoint
+      ) do
+    container_config
+    |> Map.put(:Entrypoint, entrypoint)
+  end
+
+  @doc """
+  Set the command to run
+
+  ## Example:
+    ```elixir
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_command("iex -s mix")
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :Cmd => "iex -s mix"
+    }
+    iex> ContainerConfig.new("hello-world")
+    ...> |> ContainerConfig.set_command(["/usr/local/bin/iex", "-s", "mix"])
+    %ContainerConfig{
+      :Image => "hello-world",
+      :Env => [],
+      :HostConfig => %{},
+      :Cmd => ["/usr/local/bin/iex", "-s", "mix"]
+    }
+    ```
+  """
+  @spec set_command(RemoteDockers.ContainerConfig, bitstring | list(bitstring)) ::
+          RemoteDockers.ContainerConfig
+  def set_command(
+        %RemoteDockers.ContainerConfig{} = container_config,
+        command
+      ) do
+    container_config
+    |> Map.put(:Cmd, command)
+  end
+
+  defimpl Jason.Encoder do
+    def encode(value, opts) do
+      # encode as a map, but drop any unspecified values
+      value
+      |> Map.from_struct()
+      |> Map.to_list()
+      |> Enum.filter(fn {_name, value} -> value != nil end)
+      |> Map.new()
+      |> Jason.Encode.map(opts)
+    end
   end
 end

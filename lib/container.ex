@@ -1,6 +1,7 @@
 defmodule RemoteDockers.Container do
   alias RemoteDockers.{
     Client,
+    LogClient,
     NodeConfig,
     ContainerConfig
   }
@@ -93,11 +94,15 @@ defmodule RemoteDockers.Container do
   ```
   """
   @spec create!(NodeConfig.t(), bitstring, ContainerConfig.t()) :: RemoteDockers.Container
+  def create!(node_config, name \\ nil, container_config)
+
   def create!(%NodeConfig{} = node_config, name, %ContainerConfig{} = container_config) do
     options = NodeConfig.get_options(node_config)
 
+    name_param = if name == nil, do: "", else: "?name=" <> URI.encode_www_form(name)
+
     response =
-      Client.build_endpoint(@containers_uri, "create?name=" <> name)
+      Client.build_endpoint(@containers_uri, "create" <> name_param)
       |> Client.build_uri(node_config)
       |> Client.post!(container_config |> Jason.encode!(), [], options)
 
@@ -191,6 +196,49 @@ defmodule RemoteDockers.Container do
   end
 
   def get_status!(_), do: raise(ArgumentError.exception("Invalid container type"))
+
+  @doc """
+  Get the logs of a container.
+
+  Options can be:
+
+  - `stdout:` (boolean) Return logs from `stdout`
+  - `stderr:` (boolean) Return logs from `stderr`
+  - `since:` (integer) Only return logs since this time, as a UNIX timestamp
+  - `until:` (integer) Only return logs before this time, as a UNIX timestamp
+  - `timestamps:` (boolean) Add timestamps to every log line
+  - `tail:` (integer) Only return this number of log lines from the end of the logs
+
+  """
+  @spec get_logs!(RemoteDockers.Container, list()) :: bitstring
+  def get_logs!(container, opts \\ [stdout: true, stderr: true])
+
+  def get_logs!(%RemoteDockers.Container{} = container, opts)
+      when is_list(opts) do
+    params =
+      [
+        if(opts[:stdout], do: "stdout=true", else: nil),
+        if(opts[:stderr], do: "stderr=true", else: nil),
+        if(opts[:since], do: "since=#{opts[:since]}", else: nil),
+        if(opts[:until], do: "until=#{opts[:until]}", else: nil),
+        if(opts[:timestamps], do: "timestamps=true", else: nil),
+        if(opts[:tail], do: "tail=#{opts[:tail]}", else: nil)
+      ]
+      |> Enum.filter(&(&1 != nil))
+      |> Enum.join("&")
+
+    response =
+      LogClient.build_endpoint(@containers_uri, container.id <> "/logs?" <> params)
+      |> LogClient.build_uri(container.node_config)
+      |> LogClient.get!()
+
+    case response.status_code do
+      200 -> response.body
+      _ -> raise "unable to retrieve container logs: " <> container.id
+    end
+  end
+
+  def get_logs!(_, _), do: raise(ArgumentError.exception("Invalid container type"))
 
   defp to_container(%{} = container, %NodeConfig{} = node_config) do
     %RemoteDockers.Container{
