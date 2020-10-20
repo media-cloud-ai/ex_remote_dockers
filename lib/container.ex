@@ -95,6 +95,7 @@ defmodule RemoteDockers.Container do
   """
   @spec create!(NodeConfig.t(), bitstring, ContainerConfig.t()) :: RemoteDockers.Container
   def create!(node_config, name \\ nil, container_config)
+
   def create!(%NodeConfig{} = node_config, name, %ContainerConfig{} = container_config) do
     options = NodeConfig.get_options(node_config)
 
@@ -211,18 +212,20 @@ defmodule RemoteDockers.Container do
   """
   @spec get_logs!(RemoteDockers.Container, list()) :: bitstring
   def get_logs!(container, opts \\ [stdout: true, stderr: true])
+
   def get_logs!(%RemoteDockers.Container{} = container, opts)
-  when is_list(opts) do
-    params = [
-      (if opts[:stdout], do: "stdout=true", else: nil),
-      (if opts[:stderr], do: "stderr=true", else: nil),
-      (if opts[:since], do: "since=#{opts[:since]}", else: nil),
-      (if opts[:until], do: "until=#{opts[:until]}", else: nil),
-      (if opts[:timestamps], do: "timestamps=true", else: nil),
-      (if opts[:tail], do: "tail=#{opts[:tail]}", else: nil)
-    ]
-    |> Enum.filter(& &1 != nil)
-    |> Enum.join("&")
+      when is_list(opts) do
+    params =
+      [
+        if(opts[:stdout], do: "stdout=true", else: nil),
+        if(opts[:stderr], do: "stderr=true", else: nil),
+        if(opts[:since], do: "since=#{opts[:since]}", else: nil),
+        if(opts[:until], do: "until=#{opts[:until]}", else: nil),
+        if(opts[:timestamps], do: "timestamps=true", else: nil),
+        if(opts[:tail], do: "tail=#{opts[:tail]}", else: nil)
+      ]
+      |> Enum.filter(&(&1 != nil))
+      |> Enum.join("&")
 
     response =
       LogClient.build_endpoint(@containers_uri, container.id <> "/logs?" <> params)

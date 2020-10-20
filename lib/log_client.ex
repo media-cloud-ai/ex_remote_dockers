@@ -20,13 +20,16 @@ defmodule RemoteDockers.LogClient do
 
   # the format for the body is described at
   # https://docs.docker.com/engine/api/v1.35/#operation/ContainerAttach
-  def process_response_body(<<stream_type, 0, 0, 0, length :: size(32), data :: binary - size(length), rest :: binary>>) do
+  def process_response_body(
+        <<stream_type, 0, 0, 0, length::size(32), data::binary-size(length), rest::binary>>
+      ) do
     type =
       case stream_type do
         0 -> :stdin
         1 -> :stdout
         2 -> :stderr
       end
+
     [{type, data} | process_response_body(rest)]
   end
 

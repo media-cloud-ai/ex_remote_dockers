@@ -246,8 +246,7 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec set_user(RemoteDockers.ContainerConfig, bitstring) ::
-          RemoteDockers.ContainerConfig
+  @spec set_user(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
   def set_user(
         %RemoteDockers.ContainerConfig{} = container_config,
         user
@@ -271,8 +270,7 @@ defmodule RemoteDockers.ContainerConfig do
     }
     ```
   """
-  @spec set_working_dir(RemoteDockers.ContainerConfig, bitstring) ::
-          RemoteDockers.ContainerConfig
+  @spec set_working_dir(RemoteDockers.ContainerConfig, bitstring) :: RemoteDockers.ContainerConfig
   def set_working_dir(
         %RemoteDockers.ContainerConfig{} = container_config,
         working_dir
